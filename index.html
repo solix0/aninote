@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AniNote</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background: #0d0d0e;
+            color: #d1d5db;
+            min-height: 100vh;
+            padding: 1.5rem 1rem 5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* ----- Хедер та Пошук ----- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #27272a;
+            flex-wrap: wrap;
+        }
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f3f4f6;
+            letter-spacing: 1px;
+        }
+        
+        /* Пошук у стилі Google */
+        .search-wrap {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+            min-width: 220px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            background: #141416;
+            border: 1px solid #27272a;
+            border-radius: 20px;
+            color: #f3f4f6;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        .search-input:focus {
+            border-color: #8b0000;
+            box-shadow: 0 0 8px rgba(139, 0, 0, 0.4);
+        }
+
+        /* Випадаючий список підказок */
+        .search-suggestions {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: #141416;
+            border: 1px solid #27272a;
+            border-top: 2px solid #8b0000;
+            border-radius: 12px;
+            max-height: 320px;
+            overflow-y: auto;
+            z-index: 950;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+            display: none;
+        }
+        .search-suggestions.active {
+            display: block;
+        }
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.6rem 0.8rem;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            border-bottom: 1px solid #1f1f23;
+        }
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        .suggestion-item:hover {
+            background: #1f1f24;
+        }
+        .suggestion-thumb {
+            width: 36px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            background: #09090a;
+            flex-shrink: 0;
+        }
+        .suggestion-info {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .suggestion-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #f3f4f6;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .suggestion-meta {
+            font-size: 0.75rem;
+            color: #71717a;
+            margin-top: 2px;
+        }
+
+        /* ----- Кнопки ----- */
+        button {
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        
+        .fab-add {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #8b0000;
+            border: 1px solid #b22222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px rgba(139, 0, 0, 0.4);
+            z-index: 900;
+            padding: 0;
+        }
+        .fab-add:hover {
+            background: #a00000;
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(139, 0, 0, 0.6);
+        }
+        .fab-add img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .btn-primary {
+            background: #8b0000;
+            border: 1px solid #b22222;
+            color: #f3f4f6;
+            font-weight: 500;
+            padding: 0.6rem 1.8rem;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            background: #a00000;
+            border-color: #dc143c;
+        }
+        
+        /* Стиль кнопок імпорту/експорту */
+        .btn-secondary {
+            background: #18181b;
+            border: 1px solid #3f3f46;
+            color: #a1a1aa;
+            font-weight: 400;
+            padding: 0.4rem 1.2rem;
+            cursor: pointer;
+        }
+        .btn-secondary:hover {
+            background: #27272a;
+            border-color: #8b0000;
+            color: #f4f4f5;
+        }
+
+        .btn-danger {
+            background: rgba(139, 0, 0, 0.2);
+            border: 1px solid #b22222;
+            color: #fca5a5;
+            padding: 0.4rem 1.2rem;
+            cursor: pointer;
+            font-weight: 400;
+        }
+        .btn-danger:hover {
+            background: #8b0000;
+            color: #ffffff;
+        }
+        .btn-submit {
+            background: #8b0000;
+            border: 1px solid #b22222;
+            color: #ffffff;
+            font-weight: 500;
+            padding: 0.6rem 2.5rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+        .btn-submit:hover {
+            background: #a00000;
+        }
+
+        /* Кнопки-іконки у хідері модалок (Edit, Delete, Close з аналогічним стилем btn-secondary) */
+        .modal-icon-btn {
+            background: #18181b;
+            border: 1px solid #3f3f46;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+            border-radius: 6px;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+        .modal-icon-btn:hover {
+            background: #27272a;
+            border-color: #8b0000;
+        }
+        .modal-icon-btn.danger:hover {
+            background: rgba(139, 0, 0, 0.25);
+            border-color: #b22222;
+        }
+        .modal-icon-btn img {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+            display: block;
+        }
+        .modal-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        /* ----- Сітка карток ----- */
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 1.2rem;
+            margin-top: 0.8rem;
+        }
+
+        .anime-card-wrap {
+            perspective: 1000px;
+            height: 350px;
+        }
+
+        .anime-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .anime-card-wrap:hover .anime-card-inner,
+        .anime-card-wrap.is-active .anime-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .anime-card-front,
+        .anime-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #27272a;
+            background: #141416;
+        }
+
+        /* Лицьова сторона */
+        .anime-card-front {
+            padding: 0.8rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .anime-cover-wrap {
+            width: 100%;
+            height: 220px;
+            background: #09090a;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.6rem;
+            flex-shrink: 0;
+        }
+        .anime-cover {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .anime-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #f3f4f6;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .anime-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: #71717a;
+            margin: 0.3rem 0;
+        }
+        .anime-genres {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            margin-top: auto;
+            overflow: hidden;
+            max-height: 24px;
+        }
+        .genre-badge {
+            background: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 4px;
+            padding: 0.1rem 0.35rem;
+            font-size: 0.65rem;
+            color: #a1a1aa;
+        }
+        .anime-rating {
+            background: rgba(139, 0, 0, 0.2);
+            color: #fca5a5;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            border: 1px solid rgba(178, 34, 34, 0.4);
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        /* Зворотна сторона */
+        .anime-card-back {
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: #18181b;
+            border-color: #8b0000;
+            text-align: center;
+        }
+        .back-status {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fca5a5;
+            letter-spacing: 0.5px;
+            padding: 0.5rem 1rem;
+            border: 1px solid #b22222;
+            background: rgba(139, 0, 0, 0.25);
+            border-radius: 6px;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 0;
+            color: #52525b;
+        }
+
+        /* ----- АДАПТИВНІСТЬ ДЛЯ ТЕЛЕФОНІВ ----- */
+        @media (max-width: 580px) {
+            body {
+                padding: 1rem 0.6rem 5rem 0.6rem;
+            }
+            .anime-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.6rem;
+            }
+            .anime-card-wrap {
+                height: 380px; 
+            }
+            .anime-card-front {
+                padding: 0.6rem;
+            }
+            .anime-cover-wrap {
+                height: 240px; 
+            }
+            .anime-title {
+                font-size: 0.85rem;
+                margin-top: 0.2rem;
+            }
+            .anime-meta {
+                font-size: 0.7rem;
+                margin: 0.2rem 0;
+            }
+            .fab-add {
+                bottom: 1.5rem;
+                right: 1.5rem;
+                width: 50px;
+                height: 50px;
+            }
+            .fab-add img {
+                width: 20px;
+                height: 20px;
+            }
+            .modal-controls {
+                gap: 0.5rem;
+            }
+            .modal-icon-btn {
+                width: 38px;
+                height: 38px;
+            }
+        }
+
+        /* ----- Модальні вікна ----- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal {
+            background: #141416;
+            border: 1px solid #27272a;
+            border-top: 3px solid #8b0000;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 95%;
+            max-height: 90vh;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            gap: 0.8rem;
+        }
+        .modal-header h2 {
+            font-size: 1.2rem;
+            color: #f3f4f6;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: #a1a1aa;
+            margin-bottom: 0.3rem;
+            font-size: 0.85rem;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.55rem 0.8rem;
+            background: #09090a;
+            border: 1px solid #27272a;
+            border-radius: 6px;
+            color: #f3f4f6;
+            font-size: 0.9rem;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #8b0000;
+            box-shadow: 0 0 8px rgba(139, 0, 0, 0.3);
+        }
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .form-row .form-group {
+            flex: 1 1 130px;
+        }
+
+        .genre-select-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .genre-select-wrap select {
+            flex: 2 1 130px;
+        }
+        .genre-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.5rem;
+        }
+        .genre-tag {
+            background: #18181b;
+            border: 1px solid #3f3f46;
+            border-radius: 4px;
+            padding: 0.15rem 0.6rem;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: #d1d5db;
+        }
+        .genre-tag .remove-genre {
+            cursor: pointer;
+            font-weight: bold;
+            color: #f87171;
+        }
+
+        .file-input-wrap {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .file-input-wrap input[type="file"] {
+            flex: 1;
+            padding: 0.3rem 0;
+            background: transparent;
+            border: none;
+            color: #71717a;
+            font-size: 0.8rem;
+        }
+        .file-input-wrap input[type="file"]::file-selector-button {
+            background: #18181b;
+            border: 1px solid #3f3f46;
+            border-radius: 6px;
+            color: #d1d5db;
+            padding: 0.4rem 1rem;
+            cursor: pointer;
+            margin-right: 0.8rem;
+        }
+        .preview-thumb {
+            max-width: 70px;
+            max-height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #27272a;
+            background: #09090a;
+            aspect-ratio: 2/3;
+        }
+
+        /* Детальний перегляд */
+        .detail-cover-wrap {
+            width: 100%;
+            max-width: 220px;
+            margin: 0 auto 1.2rem;
+            aspect-ratio: 2 / 3;
+            background: #09090a;
+            border: 1px solid #27272a;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .detail-cover {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .detail-meta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.6rem 1.2rem;
+            margin: 0.5rem 0 1rem;
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+        .detail-description {
+            background: #09090a;
+            border: 1px solid #27272a;
+            border-radius: 6px;
+            padding: 0.9rem;
+            line-height: 1.5;
+            margin: 1rem 0 0.5rem;
+            white-space: pre-wrap;
+            color: #d1d5db;
+            font-size: 0.9rem;
+        }
+
+        /* ----- Alert / Confirm ----- */
+        .custom-alert-modal {
+            max-width: 400px;
+            text-align: center;
+        }
+        .custom-alert-msg {
+            color: #e5e7eb;
+            font-size: 0.95rem;
+            margin: 1rem 0 1.5rem;
+            line-height: 1.4;
+        }
+        .custom-alert-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            background: #0d0d0e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <header>
+        <div class="logo">AniNote</div>
+        <div class="search-wrap">
+            <input type="text" id="searchInput" class="search-input" placeholder="Пошук... (пробіл — А-Я)" autocomplete="off" />
+            <div id="searchSuggestions" class="search-suggestions"></div>
+        </div>
+    </header>
+
+    <div id="animeList" class="anime-grid"></div>
+</div>
+
+<!-- Кругла плаваюча кнопка -->
+<button class="fab-add" id="openCreateModal" title="Новий запис">
+    <img src="plus.png" alt="+" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22white%22%3E%3Cpath d=%22M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z%22/%3E%3C/svg%3E';" />
+</button>
+
+<!-- Модалка форми -->
+<div class="modal-overlay" id="formModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modalTitle">Новий запис</h2>
+            <button class="modal-icon-btn" id="closeModalBtn" title="Закрити">
+                <img src="close.png" alt="✕" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23a1a1aa%22%3E%3Cpath d=%22M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z%22/%3E%3C/svg%3E';" />
+            </button>
+        </div>
+        <form id="animeForm">
+            <div class="form-group">
+                <label>Назва</label>
+                <input type="text" id="titleInput" placeholder="Назва аніме" required />
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Оцінка (1-10)</label>
+                    <input type="number" id="ratingInput" min="1" max="10" placeholder="8" />
+                </div>
+                <div class="form-group">
+                    <label>Дата перегляду</label>
+                    <input type="date" id="dateInput" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Жанри</label>
+                <div class="genre-select-wrap">
+                    <select id="genreSelect">
+                        <option value="Екшн">Екшн</option>
+                        <option value="Пригоди">Пригоди</option>
+                        <option value="Комедія">Комедія</option>
+                        <option value="Драма">Драма</option>
+                        <option value="Фентезі">Фентезі</option>
+                        <option value="Наукова фантастика">Наукова фантастика</option>
+                        <option value="Повсякденність">Повсякденність</option>
+                        <option value="Романтика">Романтика</option>
+                        <option value="Жахіття">Жахіття</option>
+                        <option value="Містика">Містика</option>
+                        <option value="Спорт">Спорт</option>
+                        <option value="Музика">Музика</option>
+                        <option value="Психологічне">Психологічне</option>
+                        <option value="Сьонен">Сьонен</option>
+                        <option value="Сьодзьо">Сьодзьо</option>
+                    </select>
+                    <button type="button" class="btn-secondary" id="addGenreBtn">Додати</button>
+                </div>
+                <div id="genreTags" class="genre-list"></div>
+            </div>
+            <div class="form-group">
+                <label>Обкладинка</label>
+                <div class="file-input-wrap">
+                    <input type="file" id="coverFileInput" accept="image/*" />
+                    <img id="coverPreview" class="preview-thumb" src="" alt="" style="display:none;" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Опис</label>
+                <textarea id="descInput" placeholder="Короткий опис"></textarea>
+            </div>
+            <input type="hidden" id="editId" value="" />
+            <button type="submit" class="btn-submit" id="submitBtn">Зберегти</button>
+        </form>
+    </div>
+</div>
+
+<!-- Модалка деталей (Іконки edit.png, delete.png, close.png в єдиному стилі btn-secondary) -->
+<div class="modal-overlay" id="detailModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="detailTitle"></h2>
+            <div class="modal-controls">
+                <button class="modal-icon-btn" id="editFromDetailBtn" title="Редагувати">
+                    <img src="edit.png" alt="Edit" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23a1a1aa%22%3E%3Cpath d=%22M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z%22/%3E%3C/svg%3E';" />
+                </button>
+                <button class="modal-icon-btn danger" id="deleteFromDetailBtn" title="Видалити">
+                    <img src="delete.png" alt="Delete" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23fca5a5%22%3E%3Cpath d=%22M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z%22/%3E%3C/svg%3E';" />
+                </button>
+                <button class="modal-icon-btn" id="closeDetailBtn" title="Закрити">
+                    <img src="close.png" alt="✕" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23a1a1aa%22%3E%3Cpath d=%22M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z%22/%3E%3C/svg%3E';" />
+                </button>
+            </div>
+        </div>
+        <div id="detailContent">
+            <div class="detail-cover-wrap">
+                <img id="detailCover" class="detail-cover" src="" alt="" />
+            </div>
+            <div class="detail-meta" id="detailMeta"></div>
+            <div class="detail-description" id="detailDesc"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка Alert / Confirm -->
+<div class="modal-overlay" id="alertModal" style="z-index: 1100;">
+    <div class="modal custom-alert-modal">
+        <div class="custom-alert-msg" id="alertMessage"></div>
+        <div class="custom-alert-actions" id="alertActions">
+            <button class="btn-primary" id="alertOkBtn">OK</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        let animeList = [];
+        let selectedGenres = [];
+        let currentEditId = null;
+        let currentDetailId = null;
+        let activeCardWrap = null;
+        let tempCoverData = '';
+
+        const animeListEl = document.getElementById('animeList');
+        const searchInput = document.getElementById('searchInput');
+        const searchSuggestions = document.getElementById('searchSuggestions');
+        const formModal = document.getElementById('formModal');
+        const detailModal = document.getElementById('detailModal');
+        const alertModal = document.getElementById('alertModal');
+        const alertMessage = document.getElementById('alertMessage');
+        const alertActions = document.getElementById('alertActions');
+        const modalTitle = document.getElementById('modalTitle');
+        const titleInput = document.getElementById('titleInput');
+        const ratingInput = document.getElementById('ratingInput');
+        const dateInput = document.getElementById('dateInput');
+        const descInput = document.getElementById('descInput');
+        const genreSelect = document.getElementById('genreSelect');
+        const addGenreBtn = document.getElementById('addGenreBtn');
+        const genreTags = document.getElementById('genreTags');
+        const editIdInput = document.getElementById('editId');
+        const coverFileInput = document.getElementById('coverFileInput');
+        const coverPreview = document.getElementById('coverPreview');
+        const submitBtn = document.getElementById('submitBtn');
+        const openCreateBtn = document.getElementById('openCreateModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const closeDetailBtn = document.getElementById('closeDetailBtn');
+        const detailTitle = document.getElementById('detailTitle');
+        const detailCover = document.getElementById('detailCover');
+        const detailMeta = document.getElementById('detailMeta');
+        const detailDesc = document.getElementById('detailDesc');
+        const editFromDetailBtn = document.getElementById('editFromDetailBtn');
+        const deleteFromDetailBtn = document.getElementById('deleteFromDetailBtn');
+
+        function showAlert(msg, callback) {
+            alertMessage.textContent = msg;
+            alertActions.innerHTML = '<button class="btn-primary" id="alertOkBtn">OK</button>';
+            alertModal.classList.add('active');
+            document.getElementById('alertOkBtn').onclick = function() {
+                alertModal.classList.remove('active');
+                if (callback) callback();
+            };
+        }
+
+        function showConfirm(msg, onConfirm) {
+            alertMessage.textContent = msg;
+            alertActions.innerHTML = `
+                <button class="btn-danger" id="confirmYesBtn">Так</button>
+                <button class="btn-secondary" id="confirmNoBtn">Скасувати</button>
+            `;
+            alertModal.classList.add('active');
+            document.getElementById('confirmYesBtn').onclick = function() {
+                alertModal.classList.remove('active');
+                onConfirm();
+            };
+            document.getElementById('confirmNoBtn').onclick = function() {
+                alertModal.classList.remove('active');
+            };
+        }
+
+        function loadFromStorage() {
+            const stored = localStorage.getItem('aninote_data_store');
+            if (stored) {
+                try { animeList = JSON.parse(stored); } catch { animeList = []; }
+            } else {
+                animeList = [];
+            }
+            renderList();
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('aninote_data_store', JSON.stringify(animeList));
+        }
+
+        /* Пошукові пропозиції (Google style) */
+        searchInput.addEventListener('input', function() {
+            const query = this.value;
+            
+            if (query === ' ') {
+                renderList(true);
+                hideSuggestions();
+                return;
+            }
+
+            const cleanQuery = query.trim().toLowerCase();
+            if (!cleanQuery) {
+                hideSuggestions();
+                renderList();
+                return;
+            }
+
+            const matches = animeList.filter(item => item.title.toLowerCase().includes(cleanQuery));
+            showSuggestions(matches);
+        });
+
+        function showSuggestions(list) {
+            if (!list.length) {
+                searchSuggestions.innerHTML = '<div style="padding:0.8rem; text-align:center; color:#71717a; font-size:0.85rem;">Нічого не знайдено</div>';
+                searchSuggestions.classList.add('active');
+                return;
+            }
+
+            let html = '';
+            list.forEach(item => {
+                const cover = item.cover || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2250%22%3E%3Crect width=%2236%22 height=%2250%22 fill=%22%2309090a%22/%3E%3C/svg%3E';
+                const ratingStr = item.rating ? `★ ${item.rating}` : 'Без оцінки';
+                const dateStr = item.date ? item.date : '';
+
+                html += `
+                    <div class="suggestion-item" data-id="${item.id}">
+                        <img class="suggestion-thumb" src="${cover}" alt="" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2250%22%3E%3Crect width=%2236%22 height=%2250%22 fill=%22%2309090a%22/%3E%3C/svg%3E'" />
+                        <div class="suggestion-info">
+                            <div class="suggestion-title">${item.title}</div>
+                            <div class="suggestion-meta">${ratingStr} ${dateStr ? '• ' + dateStr : ''}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            searchSuggestions.innerHTML = html;
+            searchSuggestions.classList.add('active');
+
+            document.querySelectorAll('.suggestion-item').forEach(el => {
+                el.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    hideSuggestions();
+                    openDetail(id, document.querySelector(`.anime-card-wrap[data-id="${id}"]`));
+                });
+            });
+        }
+
+        function hideSuggestions() {
+            searchSuggestions.classList.remove('active');
+        }
+
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                hideSuggestions();
+                renderList();
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-wrap')) {
+                hideSuggestions();
+            }
+        });
+
+        function renderList(sortByAlphabet = false) {
+            let listToRender = [...animeList];
+
+            if (sortByAlphabet) {
+                listToRender.sort((a, b) => a.title.localeCompare(b.title, 'uk'));
+            } else if (searchInput.value.trim() && searchInput.value !== ' ') {
+                const q = searchInput.value.trim().toLowerCase();
+                listToRender = listToRender.filter(item => item.title.toLowerCase().includes(q));
+            }
+
+            if (!listToRender.length) {
+                animeListEl.innerHTML = '<div class="empty-state"><p>Немає записів</p></div>';
+                return;
+            }
+            let html = '';
+            listToRender.forEach(item => {
+                const ratingStar = item.rating ? `★ ${item.rating}` : '—';
+                const genresHtml = item.genres?.map(g => `<span class="genre-badge">${g}</span>`).join(' ') || '';
+                const cover = item.cover || '';
+
+                html += `
+                    <div class="anime-card-wrap" data-id="${item.id}">
+                        <div class="anime-card-inner">
+                            <div class="anime-card-front">
+                                <div class="anime-cover-wrap">
+                                    <img class="anime-cover" src="${cover}" alt="" loading="lazy" 
+                                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22300%22%3E%3Crect width=%22200%22 height=%22300%22 fill=%22%2309090a%22/%3E%3C/svg%3E'" />
+                                </div>
+                                <div class="anime-title">${item.title}</div>
+                                <div class="anime-meta">
+                                    <span>${item.date || '—'}</span>
+                                    <span class="anime-rating">${ratingStar}</span>
+                                </div>
+                                <div class="anime-genres">${genresHtml}</div>
+                            </div>
+                            <div class="anime-card-back">
+                                <div class="back-status">Відкрити</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            animeListEl.innerHTML = html;
+
+            document.querySelectorAll('.anime-card-wrap').forEach(card => {
+                card.addEventListener('click', function() {
+                    openDetail(this.dataset.id, this);
+                });
+            });
+        }
+
+        function renderGenreTags() {
+            genreTags.innerHTML = selectedGenres.map(g =>
+                `<span class="genre-tag">${g} <span class="remove-genre" data-genre="${g}">✕</span></span>`
+            ).join('');
+            document.querySelectorAll('.remove-genre').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    selectedGenres = selectedGenres.filter(g => g !== this.dataset.genre);
+                    renderGenreTags();
+                });
+            });
+        }
+
+        addGenreBtn.addEventListener('click', function() {
+            const val = genreSelect.value;
+            if (!selectedGenres.includes(val)) {
+                selectedGenres.push(val);
+                renderGenreTags();
+            }
+        });
+
+        coverFileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) {
+                coverPreview.style.display = 'none';
+                coverPreview.src = '';
+                tempCoverData = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                tempCoverData = ev.target.result;
+                coverPreview.src = tempCoverData;
+                coverPreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function openForm(editData = null) {
+            selectedGenres = [];
+            genreTags.innerHTML = '';
+            editIdInput.value = '';
+            currentEditId = null;
+            tempCoverData = '';
+            coverFileInput.value = '';
+            coverPreview.style.display = 'none';
+            coverPreview.src = '';
+
+            if (editData) {
+                modalTitle.textContent = 'Редагувати запис';
+                submitBtn.textContent = 'Оновити';
+                titleInput.value = editData.title || '';
+                ratingInput.value = editData.rating || '';
+                dateInput.value = editData.date || '';
+                descInput.value = editData.description || '';
+                if (editData.genres) selectedGenres = [...editData.genres];
+                editIdInput.value = editData.id;
+                currentEditId = editData.id;
+                if (editData.cover) {
+                    tempCoverData = editData.cover;
+                    coverPreview.src = editData.cover;
+                    coverPreview.style.display = 'block';
+                }
+            } else {
+                modalTitle.textContent = 'Новий запис';
+                submitBtn.textContent = 'Зберегти';
+                titleInput.value = '';
+                ratingInput.value = '';
+                dateInput.value = '';
+                descInput.value = '';
+                editIdInput.value = '';
+                currentEditId = null;
+                selectedGenres = [];
+                tempCoverData = '';
+            }
+            renderGenreTags();
+            formModal.classList.add('active');
+        }
+
+        function closeForm() {
+            formModal.classList.remove('active');
+        }
+
+        document.getElementById('animeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = titleInput.value.trim();
+            if (!title) { showAlert('Введіть назву'); return; }
+
+            const rating = parseInt(ratingInput.value) || null;
+            const date = dateInput.value || '';
+            const description = descInput.value.trim() || '';
+            const genres = [...selectedGenres];
+            const cover = tempCoverData || '';
+
+            const editId = editIdInput.value;
+            if (editId) {
+                const idx = animeList.findIndex(a => a.id === editId);
+                if (idx !== -1) {
+                    animeList[idx] = { ...animeList[idx], title, rating, date, cover, description, genres };
+                }
+            } else {
+                const newItem = {
+                    id: Date.now().toString() + Math.random().toString(36).substr(2, 6),
+                    title,
+                    rating,
+                    date,
+                    cover,
+                    description,
+                    genres
+                };
+                animeList.unshift(newItem);
+            }
+            saveToStorage();
+            renderList();
+            closeForm();
+        });
+
+        function openDetail(id, cardElement) {
+            const item = animeList.find(a => a.id === id);
+            if (!item) return;
+
+            currentDetailId = id;
+            activeCardWrap = cardElement;
+
+            if (activeCardWrap) {
+                activeCardWrap.classList.add('is-active');
+                const statusEl = activeCardWrap.querySelector('.back-status');
+                if (statusEl) statusEl.textContent = 'Відкрито';
+            }
+
+            detailTitle.textContent = item.title || 'Без назви';
+            detailCover.src = item.cover || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22360%22 height=%22540%22%3E%3Crect width=%22360%22 height=%22540%22 fill=%22%2309090a%22/%3E%3C/svg%3E';
+            detailCover.alt = item.title;
+            const genresStr = item.genres?.length ? item.genres.join(' · ') : '—';
+            const ratingStr = item.rating ? `★ ${item.rating}` : '—';
+            detailMeta.innerHTML = `
+                <span>${item.date || '—'}</span>
+                <span>${ratingStr}</span>
+                <span>${genresStr}</span>
+            `;
+            detailDesc.textContent = item.description || 'Опис відсутній.';
+            detailModal.classList.add('active');
+        }
+
+        function closeDetail() {
+            detailModal.classList.remove('active');
+
+            if (activeCardWrap) {
+                activeCardWrap.classList.remove('is-active');
+                const statusEl = activeCardWrap.querySelector('.back-status');
+                if (statusEl) statusEl.textContent = 'Відкрити';
+                activeCardWrap = null;
+            }
+            currentDetailId = null;
+        }
+
+        editFromDetailBtn.addEventListener('click', function() {
+            if (!currentDetailId) return;
+            const item = animeList.find(a => a.id === currentDetailId);
+            if (item) {
+                closeDetail();
+                openForm(item);
+            }
+        });
+
+        deleteFromDetailBtn.addEventListener('click', function() {
+            if (!currentDetailId) return;
+            const item = animeList.find(a => a.id === currentDetailId);
+            if (!item) return;
+
+            showConfirm('Видалити цей запис?', function() {
+                animeList = animeList.filter(a => a.id !== currentDetailId);
+                saveToStorage();
+                renderList();
+                closeDetail();
+            });
+        });
+
+        openCreateBtn.addEventListener('click', () => openForm(null));
+        closeModalBtn.addEventListener('click', closeForm);
+        closeDetailBtn.addEventListener('click', closeDetail);
+
+        formModal.addEventListener('click', function(e) {
+            if (e.target === this) closeForm();
+        });
+        detailModal.addEventListener('click', function(e) {
+            if (e.target === this) closeDetail();
+        });
+
+        // Експорт / імпорт
+        const footer = document.createElement('div');
+        footer.style.marginTop = '2rem';
+        footer.style.display = 'flex';
+        footer.style.gap = '0.8rem';
+        footer.style.flexWrap = 'wrap';
+        footer.style.justifyContent = 'center';
+
+        const exportBtn = document.createElement('button');
+        exportBtn.className = 'btn-secondary';
+        exportBtn.textContent = 'Експорт';
+        exportBtn.addEventListener('click', function() {
+            const data = localStorage.getItem('aninote_data_store');
+            if (!data) { showAlert('Немає даних для експорту'); return; }
+            const blob = new Blob([data], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'aninote_backup.json';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        });
+
+        const importBtn = document.createElement('button');
+        importBtn.className = 'btn-secondary';
+        importBtn.textContent = 'Імпорт';
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = '.json';
+        fileInput.style.display = 'none';
+        importBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    const imported = JSON.parse(ev.target.result);
+                    if (Array.isArray(imported)) {
+                        animeList = imported;
+                        saveToStorage();
+                        renderList();
+                        showAlert('Імпорт успішно виконано!');
+                    } else showAlert('Невірний формат файлу');
+                } catch { showAlert('Помилка зчитування файлу'); }
+                fileInput.value = '';
+            };
+            reader.readAsText(file);
+        });
+
+        footer.appendChild(exportBtn);
+        footer.appendChild(importBtn);
+        document.querySelector('.app').appendChild(footer);
+
+        loadFromStorage();
+    })();
+</script>
+</body>
+</html>
