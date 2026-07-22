@@ -1,1223 +1,1463 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/png" href="logo.png">
     <title>AniNote</title>
     <style>
+        /* ===== СТРОГИЙ ЧОРНО-БІЛО-СІРИЙ МІНІМАЛІЗМ ===== */
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-hover: #1e1e1e;
+            --border: #2e2e2e;
+            --text-main: #ffffff;
+            --text-muted: #8e8e8e;
+            --badge-bg: #222222;
+            --modal-glass: rgba(20, 20, 20, 0.92);
+            --modal-border: rgba(255, 255, 255, 0.12);
+            --status-watching: #4CAF50;
+            --status-watched: #666666;
+            --status-planned: #FFA726;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
+
         body {
-            background: #0d0d0e;
-            color: #d1d5db;
+            background-color: var(--bg);
+            color: var(--text-main);
             min-height: 100vh;
-            padding: 1.5rem 1rem 5rem 1rem;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: center;
+            padding: 48px 20px;
         }
+
         .app {
-            max-width: 1200px;
+            max-width: 760px;
             width: 100%;
         }
 
-        /* ----- Хедер та Пошук ----- */
-        header {
+        /* ===== ШАПКА ===== */
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #27272a;
-            flex-wrap: wrap;
-        }
-        .logo {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #f3f4f6;
-            letter-spacing: 1px;
-        }
-        
-        /* Пошук у стилі Google */
-        .search-wrap {
-            position: relative;
-            flex: 1;
-            max-width: 400px;
-            min-width: 220px;
-        }
-        .search-input {
-            width: 100%;
-            padding: 0.6rem 1rem;
-            background: #141416;
-            border: 1px solid #27272a;
-            border-radius: 20px;
-            color: #f3f4f6;
-            font-size: 0.9rem;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-        .search-input:focus {
-            border-color: #8b0000;
-            box-shadow: 0 0 8px rgba(139, 0, 0, 0.4);
+            margin-bottom: 28px;
         }
 
-        /* Випадаючий список підказок */
-        .search-suggestions {
-            position: absolute;
-            top: calc(100% + 6px);
-            left: 0;
-            right: 0;
-            background: #141416;
-            border: 1px solid #27272a;
-            border-top: 2px solid #8b0000;
-            border-radius: 12px;
-            max-height: 320px;
-            overflow-y: auto;
-            z-index: 950;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
-            display: none;
-        }
-        .search-suggestions.active {
-            display: block;
-        }
-        .suggestion-item {
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
             display: flex;
             align-items: center;
-            gap: 0.8rem;
-            padding: 0.6rem 0.8rem;
-            cursor: pointer;
-            transition: background 0.15s ease;
-            border-bottom: 1px solid #1f1f23;
-        }
-        .suggestion-item:last-child {
-            border-bottom: none;
-        }
-        .suggestion-item:hover {
-            background: #1f1f24;
-        }
-        .suggestion-thumb {
-            width: 36px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 4px;
-            background: #09090a;
-            flex-shrink: 0;
-        }
-        .suggestion-info {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .suggestion-title {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #f3f4f6;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .suggestion-meta {
-            font-size: 0.75rem;
-            color: #71717a;
-            margin-top: 2px;
+            gap: 10px;
         }
 
-        /* ----- Кнопки ----- */
-        button {
-            border-radius: 6px;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
+        .logo-symbol {
+            font-size: 20px;
         }
-        
-        .fab-add {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: #8b0000;
-            border: 1px solid #b22222;
+
+        .stats {
+            font-size: 15px;
+            color: var(--text-muted);
+            background: var(--surface);
+            padding: 8px 18px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .stats strong {
+            color: var(--text-main);
+        }
+
+        /* ===== СТВОРЕННЯ КАТЕГОРІЇ ===== */
+        .add-cat-form {
             display: flex;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .add-cat-form input {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 15px;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+            min-width: 0;
+        }
+
+        .add-cat-form input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .add-cat-form input:focus {
+            border-color: #ffffff;
+        }
+
+        .btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-size: 15px;
+            color: var(--text-main);
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px rgba(139, 0, 0, 0.4);
-            z-index: 900;
-            padding: 0;
-        }
-        .fab-add:hover {
-            background: #a00000;
-            transform: scale(1.08);
-            box-shadow: 0 6px 20px rgba(139, 0, 0, 0.6);
-        }
-        .fab-add img {
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
-            display: block;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
         }
 
         .btn-primary {
-            background: #8b0000;
-            border: 1px solid #b22222;
-            color: #f3f4f6;
-            font-weight: 500;
-            padding: 0.6rem 1.8rem;
-            cursor: pointer;
+            background: #ffffff;
+            border-color: #ffffff;
+            color: #000000;
         }
+
         .btn-primary:hover {
-            background: #a00000;
-            border-color: #dc143c;
-        }
-        
-        /* Стиль кнопок імпорту/експорту */
-        .btn-secondary {
-            background: #18181b;
-            border: 1px solid #3f3f46;
-            color: #a1a1aa;
-            font-weight: 400;
-            padding: 0.4rem 1.2rem;
-            cursor: pointer;
-        }
-        .btn-secondary:hover {
-            background: #27272a;
-            border-color: #8b0000;
-            color: #f4f4f5;
+            background: #e0e0e0;
+            border-color: #e0e0e0;
         }
 
-        .btn-danger {
-            background: rgba(139, 0, 0, 0.2);
-            border: 1px solid #b22222;
-            color: #fca5a5;
-            padding: 0.4rem 1.2rem;
-            cursor: pointer;
-            font-weight: 400;
-        }
-        .btn-danger:hover {
-            background: #8b0000;
-            color: #ffffff;
-        }
-        .btn-submit {
-            background: #8b0000;
-            border: 1px solid #b22222;
-            color: #ffffff;
-            font-weight: 500;
-            padding: 0.6rem 2.5rem;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 0.5rem;
-        }
-        .btn-submit:hover {
-            background: #a00000;
-        }
-
-        /* Кнопки-іконки у хідері модалок (Edit, Delete, Close з аналогічним стилем btn-secondary) */
-        .modal-icon-btn {
-            background: #18181b;
-            border: 1px solid #3f3f46;
-            width: 36px;
-            height: 36px;
+        /* ===== ПАНЕЛЬ КЕРУВАННЯ ===== */
+        .control-bar {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            padding: 0;
-            border-radius: 6px;
-            flex-shrink: 0;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .control-bar h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 8px;
+            color: var(--text-muted);
             transition: all 0.2s ease;
         }
-        .modal-icon-btn:hover {
-            background: #27272a;
-            border-color: #8b0000;
-        }
-        .modal-icon-btn.danger:hover {
-            background: rgba(139, 0, 0, 0.25);
-            border-color: #b22222;
-        }
-        .modal-icon-btn img {
-            width: 18px;
-            height: 18px;
-            object-fit: contain;
-            display: block;
-        }
-        .modal-controls {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
+
+        .btn-sm:hover {
+            background: var(--surface-hover);
+            color: var(--text-main);
+            border-color: #555555;
         }
 
-        /* ----- Сітка карток ----- */
-        .anime-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-            gap: 1.2rem;
-            margin-top: 0.8rem;
+        .btn-install {
+            color: #ffffff;
+            border-color: #555555;
+            background: #1a1a1a;
+            display: none;
         }
 
-        .anime-card-wrap {
-            perspective: 1000px;
-            height: 350px;
+        .btn-install:hover {
+            background: #ffffff;
+            color: #000000;
         }
 
-        .anime-card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-style: preserve-3d;
-            cursor: pointer;
+        .btn-danger-text:hover {
+            color: #ffffff;
+            border-color: #ffffff;
+            background: #1e1e1e;
         }
 
-        .anime-card-wrap:hover .anime-card-inner,
-        .anime-card-wrap.is-active .anime-card-inner {
-            transform: rotateY(180deg);
-        }
-
-        .anime-card-front,
-        .anime-card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #27272a;
-            background: #141416;
-        }
-
-        /* Лицьова сторона */
-        .anime-card-front {
-            padding: 0.8rem;
+        /* ===== КАТЕГОРІЇ ТА СПИСКИ ===== */
+        .categories-container {
             display: flex;
             flex-direction: column;
+            gap: 20px;
         }
-        .anime-cover-wrap {
-            width: 100%;
-            height: 220px;
-            background: #09090a;
-            border-radius: 4px;
+
+        .category-block {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
             overflow: hidden;
+            transition: border-color 0.2s, opacity 0.2s, transform 0.2s;
+            cursor: default;
+        }
+
+        .category-block.dragging {
+            opacity: 0.4;
+            transform: scale(0.98);
+        }
+
+        .category-block.drag-over {
+            border-color: #ffffff;
+            box-shadow: 0 0 20px rgba(255,255,255,0.05);
+        }
+
+        .category-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin-bottom: 0.6rem;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+            user-select: none;
+            border-bottom: 1px solid transparent;
+            transition: border-bottom-color 0.3s ease;
+        }
+
+        .category-block.open .category-header {
+            border-bottom-color: var(--border);
+        }
+
+        .category-title-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .arrow-toggle {
+            font-size: 13px;
+            color: var(--text-muted);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-block;
             flex-shrink: 0;
+            width: 18px;
+            text-align: center;
+            font-weight: 300;
         }
-        .anime-cover {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
+
+        .category-block.open .arrow-toggle {
+            transform: rotate(90deg);
         }
-        .anime-title {
+
+        .category-name {
+            font-size: 17px;
             font-weight: 600;
-            font-size: 0.9rem;
-            color: #f3f4f6;
+            color: #ffffff;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .anime-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75rem;
-            color: #71717a;
-            margin: 0.3rem 0;
-        }
-        .anime-genres {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.25rem;
-            margin-top: auto;
-            overflow: hidden;
-            max-height: 24px;
-        }
-        .genre-badge {
-            background: #18181b;
-            border: 1px solid #27272a;
-            border-radius: 4px;
-            padding: 0.1rem 0.35rem;
-            font-size: 0.65rem;
-            color: #a1a1aa;
-        }
-        .anime-rating {
-            background: rgba(139, 0, 0, 0.2);
-            color: #fca5a5;
-            padding: 0.1rem 0.4rem;
-            border-radius: 4px;
-            border: 1px solid rgba(178, 34, 34, 0.4);
-            font-weight: 600;
-            font-size: 0.75rem;
+
+        .category-count {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: var(--badge-bg);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 10px;
+            flex-shrink: 0;
         }
 
-        /* Зворотна сторона */
-        .anime-card-back {
-            transform: rotateY(180deg);
+        .category-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .cat-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.15s;
+            user-select: none;
+            touch-action: none;
+            flex-shrink: 0;
+        }
+
+        .cat-btn:hover:not(:disabled) {
+            color: #ffffff;
+            border-color: #555555;
+            background: var(--surface-hover);
+        }
+
+        .cat-btn:disabled {
+            opacity: 0.2;
+            cursor: default;
+            border-color: var(--border) !important;
+            color: var(--text-muted) !important;
+            background: none !important;
+        }
+
+        .cat-btn.drag-handle {
+            cursor: grab;
+            touch-action: none;
+            font-size: 16px;
+        }
+
+        .cat-btn.drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .cat-btn.drag-handle:hover:not(:disabled) {
+            cursor: grab;
+        }
+
+        /* ТІЛО КАТЕГОРІЇ (СХОВАНЕ/ВІДКРИТЕ) */
+        .category-body {
+            display: none;
+            padding: 16px 20px;
+            animation: fadeIn 0.25s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .category-block.open .category-body {
+            display: block;
+        }
+
+        .add-item-form {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            width: 100%;
+        }
+
+        .add-item-form input {
+            flex: 1;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 14px;
+            color: #ffffff;
+            outline: none;
+            min-width: 0;
+        }
+
+        .add-item-form input:focus {
+            border-color: #555555;
+        }
+
+        .add-item-form select {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 14px;
+            color: #ffffff;
+            outline: none;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .add-item-form button {
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .add-item-form button:hover {
+            background: #e0e0e0;
+        }
+
+        /* СПИСОК АНІМЕ ВСЕРЕДИНІ КАТЕГОРІЇ */
+        .anime-sublist {
             display: flex;
             flex-direction: column;
+            gap: 8px;
+        }
+
+        .anime-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            background: #18181b;
-            border-color: #8b0000;
-            text-align: center;
-        }
-        .back-status {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #fca5a5;
-            letter-spacing: 0.5px;
-            padding: 0.5rem 1rem;
-            border: 1px solid #b22222;
-            background: rgba(139, 0, 0, 0.25);
-            border-radius: 6px;
+            justify-content: space-between;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
+        .anime-card:hover {
+            border-color: #555555;
+            background: var(--surface-hover);
+        }
+
+        .anime-card.watched {
+            opacity: 0.55;
+        }
+
+        .anime-card.watched .anime-title {
+            color: var(--text-muted);
+        }
+
+        .anime-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .anime-status {
+            font-size: 10px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+        }
+
+        .anime-status.status-watching {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .anime-status.status-planned {
+            background: rgba(255, 167, 38, 0.2);
+            color: #FFA726;
+            border: 1px solid rgba(255, 167, 38, 0.3);
+        }
+
+        .anime-status.status-watched {
+            background: rgba(136, 136, 136, 0.15);
+            color: #888888;
+            border: 1px solid rgba(136, 136, 136, 0.2);
+        }
+
+        .anime-title {
+            font-size: 15px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: color 0.2s ease;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            line-height: 1;
+            transition: color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .delete-btn:hover {
+            color: #ffffff;
+        }
+
+        .empty-substate {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+        }
+
+        /* ===== ПОРОЖНІЙ СТАН ДОДАТКУ ===== */
         .empty-state {
-            grid-column: 1 / -1;
             text-align: center;
-            padding: 4rem 0;
-            color: #52525b;
+            padding: 56px 20px;
+            color: var(--text-muted);
+            font-size: 16px;
+            border: 1px dashed var(--border);
+            border-radius: 16px;
         }
 
-        /* ----- АДАПТИВНІСТЬ ДЛЯ ТЕЛЕФОНІВ ----- */
-        @media (max-width: 580px) {
-            body {
-                padding: 1rem 0.6rem 5rem 0.6rem;
-            }
-            .anime-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.6rem;
-            }
-            .anime-card-wrap {
-                height: 380px; 
-            }
-            .anime-card-front {
-                padding: 0.6rem;
-            }
-            .anime-cover-wrap {
-                height: 240px; 
-            }
-            .anime-title {
-                font-size: 0.85rem;
-                margin-top: 0.2rem;
-            }
-            .anime-meta {
-                font-size: 0.7rem;
-                margin: 0.2rem 0;
-            }
-            .fab-add {
-                bottom: 1.5rem;
-                right: 1.5rem;
-                width: 50px;
-                height: 50px;
-            }
-            .fab-add img {
-                width: 20px;
-                height: 20px;
-            }
-            .modal-controls {
-                gap: 0.5rem;
-            }
-            .modal-icon-btn {
-                width: 38px;
-                height: 38px;
-            }
+        #fileInput {
+            display: none;
         }
 
-        /* ----- Модальні вікна ----- */
+        /* ===== СПОВІЩЕННЯ ТА МАКСИМАЛЬНО СТРОГІ ВІКНА ===== */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: calc(100% - 40px);
+            max-width: 400px;
+            pointer-events: none;
+        }
+
+        .toast-item {
+            pointer-events: auto;
+            background: var(--modal-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--modal-border);
+            color: #ffffff;
+            padding: 14px 20px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 500;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            letter-spacing: -0.2px;
+        }
+
+        .toast-item.hide {
+            animation: fadeOut 0.2s ease forwards;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0) scale(1); }
+            to { opacity: 0; transform: translateY(-10px) scale(0.96); }
+        }
+
+        /* Модальне вікно */
         .modal-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(4px);
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 2000;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
+            padding: 20px;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s ease;
         }
+
         .modal-overlay.active {
             opacity: 1;
             pointer-events: auto;
         }
-        .modal {
-            background: #141416;
-            border: 1px solid #27272a;
-            border-top: 3px solid #8b0000;
-            border-radius: 10px;
-            max-width: 600px;
-            width: 95%;
-            max-height: 90vh;
-            padding: 1.5rem;
-            overflow-y: auto;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.2rem;
-            gap: 0.8rem;
-        }
-        .modal-header h2 {
-            font-size: 1.2rem;
-            color: #f3f4f6;
-            font-weight: 600;
-            white-space: nowrap;
+
+        .modal-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 340px;
+            border-radius: 16px;
             overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .form-group label {
-            display: block;
-            font-weight: 500;
-            color: #a1a1aa;
-            margin-bottom: 0.3rem;
-            font-size: 0.85rem;
-        }
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 0.55rem 0.8rem;
-            background: #09090a;
-            border: 1px solid #27272a;
-            border-radius: 6px;
-            color: #f3f4f6;
-            font-size: 0.9rem;
-        }
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #8b0000;
-            box-shadow: 0 0 8px rgba(139, 0, 0, 0.3);
-        }
-        .form-group textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-        .form-row {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        .form-row .form-group {
-            flex: 1 1 130px;
-        }
-
-        .genre-select-wrap {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .genre-select-wrap select {
-            flex: 2 1 130px;
-        }
-        .genre-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.4rem;
-            margin-top: 0.5rem;
-        }
-        .genre-tag {
-            background: #18181b;
-            border: 1px solid #3f3f46;
-            border-radius: 4px;
-            padding: 0.15rem 0.6rem;
-            font-size: 0.75rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            color: #d1d5db;
-        }
-        .genre-tag .remove-genre {
-            cursor: pointer;
-            font-weight: bold;
-            color: #f87171;
-        }
-
-        .file-input-wrap {
-            display: flex;
-            gap: 0.8rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .file-input-wrap input[type="file"] {
-            flex: 1;
-            padding: 0.3rem 0;
-            background: transparent;
-            border: none;
-            color: #71717a;
-            font-size: 0.8rem;
-        }
-        .file-input-wrap input[type="file"]::file-selector-button {
-            background: #18181b;
-            border: 1px solid #3f3f46;
-            border-radius: 6px;
-            color: #d1d5db;
-            padding: 0.4rem 1rem;
-            cursor: pointer;
-            margin-right: 0.8rem;
-        }
-        .preview-thumb {
-            max-width: 70px;
-            max-height: 100px;
-            object-fit: cover;
-            border-radius: 4px;
-            border: 1px solid #27272a;
-            background: #09090a;
-            aspect-ratio: 2/3;
-        }
-
-        /* Детальний перегляд */
-        .detail-cover-wrap {
-            width: 100%;
-            max-width: 220px;
-            margin: 0 auto 1.2rem;
-            aspect-ratio: 2 / 3;
-            background: #09090a;
-            border: 1px solid #27272a;
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .detail-cover {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        .detail-meta {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.6rem 1.2rem;
-            margin: 0.5rem 0 1rem;
-            color: #9ca3af;
-            font-size: 0.85rem;
-        }
-        .detail-description {
-            background: #09090a;
-            border: 1px solid #27272a;
-            border-radius: 6px;
-            padding: 0.9rem;
-            line-height: 1.5;
-            margin: 1rem 0 0.5rem;
-            white-space: pre-wrap;
-            color: #d1d5db;
-            font-size: 0.9rem;
-        }
-
-        /* ----- Alert / Confirm ----- */
-        .custom-alert-modal {
-            max-width: 400px;
             text-align: center;
+            transform: scale(0.95);
+            transition: transform 0.2s ease;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
         }
-        .custom-alert-msg {
-            color: #e5e7eb;
-            font-size: 0.95rem;
-            margin: 1rem 0 1.5rem;
+
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+
+        .modal-content {
+            padding: 24px 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .modal-text {
+            font-size: 14px;
+            color: var(--text-muted);
             line-height: 1.4;
         }
-        .custom-alert-actions {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
+
+        .modal-input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 15px;
+            color: #ffffff;
+            outline: none;
+            margin-top: 12px;
+            transition: border-color 0.2s;
         }
 
-        ::-webkit-scrollbar {
-            width: 6px;
-            background: #0d0d0e;
+        .modal-input:focus {
+            border-color: #ffffff;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #27272a;
-            border-radius: 3px;
+
+        .modal-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .modal-actions {
+            display: flex;
+            border-top: 1px solid var(--border);
+        }
+
+        .modal-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 16px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            outline: none;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .modal-btn:hover {
+            background: var(--surface-hover);
+            color: var(--text-main);
+        }
+
+        .modal-btn.confirm-action {
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .modal-btn.confirm-action:hover {
+            background: var(--surface-hover);
+            color: #ffffff;
+        }
+
+        .modal-btn.cancel-action {
+            color: #ffffff;
+        }
+
+        .modal-btn.cancel-action:hover {
+            background: var(--surface-hover);
+            color: #ffffff;
+        }
+
+        .modal-btn + .modal-btn {
+            border-left: 1px solid var(--border);
+        }
+
+        /* ===== МОБІЛЬНІ АДАПТАЦІЇ ===== */
+        @media (max-width: 600px) {
+            body { 
+                padding: 24px 12px; 
+            }
+            
+            .add-cat-form { 
+                flex-direction: column; 
+            }
+            
+            .add-cat-form .btn {
+                width: 100%;
+            }
+            
+            .control-bar { 
+                flex-direction: column; 
+                align-items: flex-start; 
+                gap: 12px; 
+            }
+            
+            .control-group { 
+                width: 100%; 
+            }
+            
+            .btn-sm { 
+                flex: 1; 
+                text-align: center; 
+            }
+            
+            .add-item-form { 
+                flex-direction: column; 
+            }
+            
+            .add-item-form input {
+                width: 100%;
+            }
+            
+            .add-item-form select {
+                width: 100%;
+            }
+            
+            .add-item-form button {
+                width: 100%;
+                padding: 12px 16px;
+                min-height: 44px;
+            }
+            
+            .category-header {
+                padding: 14px 16px;
+            }
+            
+            .category-body {
+                padding: 12px 16px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .logo {
+                font-size: 24px;
+            }
+            
+            .category-name {
+                font-size: 15px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="app">
-    <header>
-        <div class="logo">AniNote</div>
-        <div class="search-wrap">
-            <input type="text" id="searchInput" class="search-input" placeholder="Пошук... (пробіл — А-Я)" autocomplete="off" />
-            <div id="searchSuggestions" class="search-suggestions"></div>
+    <!-- ШАПКА -->
+    <div class="header">
+        <div class="logo">
+            <span class="logo-symbol">●</span> AniNote
         </div>
-    </header>
-
-    <div id="animeList" class="anime-grid"></div>
-</div>
-
-<!-- Кругла плаваюча кнопка -->
-<button class="fab-add" id="openCreateModal" title="Новий запис">
-    <img src="plus.png" alt="+" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22white%22%3E%3Cpath d=%22M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z%22/%3E%3C/svg%3E';" />
-</button>
-
-<!-- Модалка форми -->
-<div class="modal-overlay" id="formModal">
-    <div class="modal">
-        <div class="modal-header">
-            <h2 id="modalTitle">Новий запис</h2>
-            <button class="modal-icon-btn" id="closeModalBtn" title="Закрити">
-                <img src="close.png" alt="✕" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23a1a1aa%22%3E%3Cpath d=%22M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z%22/%3E%3C/svg%3E';" />
-            </button>
+        <div class="stats">
+            Всього тайтлів: <strong id="totalCount">0</strong>
         </div>
-        <form id="animeForm">
-            <div class="form-group">
-                <label>Назва</label>
-                <input type="text" id="titleInput" placeholder="Назва аніме" required />
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Оцінка (1-10)</label>
-                    <input type="number" id="ratingInput" min="1" max="10" placeholder="8" />
-                </div>
-                <div class="form-group">
-                    <label>Дата перегляду</label>
-                    <input type="date" id="dateInput" />
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Жанри</label>
-                <div class="genre-select-wrap">
-                    <select id="genreSelect">
-                        <option value="Екшн">Екшн</option>
-                        <option value="Пригоди">Пригоди</option>
-                        <option value="Комедія">Комедія</option>
-                        <option value="Драма">Драма</option>
-                        <option value="Фентезі">Фентезі</option>
-                        <option value="Наукова фантастика">Наукова фантастика</option>
-                        <option value="Повсякденність">Повсякденність</option>
-                        <option value="Романтика">Романтика</option>
-                        <option value="Жахіття">Жахіття</option>
-                        <option value="Містика">Містика</option>
-                        <option value="Спорт">Спорт</option>
-                        <option value="Музика">Музика</option>
-                        <option value="Психологічне">Психологічне</option>
-                        <option value="Сьонен">Сьонен</option>
-                        <option value="Сьодзьо">Сьодзьо</option>
-                    </select>
-                    <button type="button" class="btn-secondary" id="addGenreBtn">Додати</button>
-                </div>
-                <div id="genreTags" class="genre-list"></div>
-            </div>
-            <div class="form-group">
-                <label>Обкладинка</label>
-                <div class="file-input-wrap">
-                    <input type="file" id="coverFileInput" accept="image/*" />
-                    <img id="coverPreview" class="preview-thumb" src="" alt="" style="display:none;" />
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Опис</label>
-                <textarea id="descInput" placeholder="Короткий опис"></textarea>
-            </div>
-            <input type="hidden" id="editId" value="" />
-            <button type="submit" class="btn-submit" id="submitBtn">Зберегти</button>
-        </form>
     </div>
+
+    <!-- СТВОРЕННЯ НОВОЇ КАТЕГОРІЇ -->
+    <form class="add-cat-form" id="addCatForm">
+        <input type="text" id="catNameInput" placeholder="Назва нової категорії ..." required autocomplete="off">
+        <button type="submit" class="btn btn-primary">Створити категорію</button>
+    </form>
+
+    <!-- ПАНЕЛЬ КЕРУВАННЯ -->
+    <div class="control-bar">
+        <h2>Категорії</h2>
+        <div class="control-group">
+            <button class="btn btn-sm btn-install" id="installBtn">📲 Встановити</button>
+            <button class="btn btn-sm" id="exportBtn">Експорт</button>
+            <button class="btn btn-sm" id="importBtn">Імпорт</button>
+            <button class="btn btn-sm btn-danger-text" id="clearAllBtn">Очистити все</button>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" accept=".json">
+
+    <!-- СПИСОК КАТЕГОРІЙ -->
+    <div class="categories-container" id="categoriesContainer"></div>
 </div>
 
-<!-- Модалка деталей (Іконки edit.png, delete.png, close.png в єдиному стилі btn-secondary) -->
-<div class="modal-overlay" id="detailModal">
-    <div class="modal">
-        <div class="modal-header">
-            <h2 id="detailTitle"></h2>
-            <div class="modal-controls">
-                <button class="modal-icon-btn" id="editFromDetailBtn" title="Редагувати">
-                    <img src="edit.png" alt="Edit" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23a1a1aa%22%3E%3Cpath d=%22M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z%22/%3E%3C/svg%3E';" />
-                </button>
-                <button class="modal-icon-btn danger" id="deleteFromDetailBtn" title="Видалити">
-                    <img src="delete.png" alt="Delete" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23fca5a5%22%3E%3Cpath d=%22M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z%22/%3E%3C/svg%3E';" />
-                </button>
-                <button class="modal-icon-btn" id="closeDetailBtn" title="Закрити">
-                    <img src="close.png" alt="✕" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23a1a1aa%22%3E%3Cpath d=%22M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z%22/%3E%3C/svg%3E';" />
-                </button>
-            </div>
+<!-- СПОВІЩЕННЯ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- МОДАЛЬНЕ ВІКНО ПІДТВЕРДЖЕННЯ -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+        <div class="modal-content">
+            <div class="modal-title" id="modalTitle">Підтвердження</div>
+            <div class="modal-text" id="modalText">Ви впевнені?</div>
         </div>
-        <div id="detailContent">
-            <div class="detail-cover-wrap">
-                <img id="detailCover" class="detail-cover" src="" alt="" />
-            </div>
-            <div class="detail-meta" id="detailMeta"></div>
-            <div class="detail-description" id="detailDesc"></div>
+        <div class="modal-actions">
+            <button class="modal-btn cancel-action" id="modalCancelBtn">Скасувати</button>
+            <button class="modal-btn confirm-action" id="modalConfirmBtn">Підтвердити</button>
         </div>
     </div>
 </div>
 
-<!-- Модалка Alert / Confirm -->
-<div class="modal-overlay" id="alertModal" style="z-index: 1100;">
-    <div class="modal custom-alert-modal">
-        <div class="custom-alert-msg" id="alertMessage"></div>
-        <div class="custom-alert-actions" id="alertActions">
-            <button class="btn-primary" id="alertOkBtn">OK</button>
+<!-- МОДАЛЬНЕ ВІКНО РЕДАГУВАННЯ НАЗВИ -->
+<div class="modal-overlay" id="editModalOverlay">
+    <div class="modal-box">
+        <div class="modal-content">
+            <div class="modal-title" id="editModalTitle">Редагувати назву</div>
+            <div class="modal-text" id="editModalText">Введіть нову назву для категорії</div>
+            <input type="text" class="modal-input" id="editModalInput" placeholder="Нова назва..." autocomplete="off">
+        </div>
+        <div class="modal-actions">
+            <button class="modal-btn cancel-action" id="editCancelBtn">Скасувати</button>
+            <button class="modal-btn confirm-action" id="editSaveBtn">Зберегти</button>
         </div>
     </div>
 </div>
 
 <script>
-    (function() {
-        let animeList = [];
-        let selectedGenres = [];
-        let currentEditId = null;
-        let currentDetailId = null;
-        let activeCardWrap = null;
-        let tempCoverData = '';
+    // ===== СИСТЕМА СПОВІЩЕНЬ МОНОХРОМ =====
+    const CustomUI = {
+        toast(message, duration = 2500) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast-item';
+            toast.innerHTML = `<span>${message}</span>`;
+            
+            container.appendChild(toast);
 
-        const animeListEl = document.getElementById('animeList');
-        const searchInput = document.getElementById('searchInput');
-        const searchSuggestions = document.getElementById('searchSuggestions');
-        const formModal = document.getElementById('formModal');
-        const detailModal = document.getElementById('detailModal');
-        const alertModal = document.getElementById('alertModal');
-        const alertMessage = document.getElementById('alertMessage');
-        const alertActions = document.getElementById('alertActions');
-        const modalTitle = document.getElementById('modalTitle');
-        const titleInput = document.getElementById('titleInput');
-        const ratingInput = document.getElementById('ratingInput');
-        const dateInput = document.getElementById('dateInput');
-        const descInput = document.getElementById('descInput');
-        const genreSelect = document.getElementById('genreSelect');
-        const addGenreBtn = document.getElementById('addGenreBtn');
-        const genreTags = document.getElementById('genreTags');
-        const editIdInput = document.getElementById('editId');
-        const coverFileInput = document.getElementById('coverFileInput');
-        const coverPreview = document.getElementById('coverPreview');
-        const submitBtn = document.getElementById('submitBtn');
-        const openCreateBtn = document.getElementById('openCreateModal');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const closeDetailBtn = document.getElementById('closeDetailBtn');
-        const detailTitle = document.getElementById('detailTitle');
-        const detailCover = document.getElementById('detailCover');
-        const detailMeta = document.getElementById('detailMeta');
-        const detailDesc = document.getElementById('detailDesc');
-        const editFromDetailBtn = document.getElementById('editFromDetailBtn');
-        const deleteFromDetailBtn = document.getElementById('deleteFromDetailBtn');
+            setTimeout(() => {
+                toast.classList.add('hide');
+                toast.addEventListener('animationend', () => toast.remove());
+            }, duration);
+        },
 
-        function showAlert(msg, callback) {
-            alertMessage.textContent = msg;
-            alertActions.innerHTML = '<button class="btn-primary" id="alertOkBtn">OK</button>';
-            alertModal.classList.add('active');
-            document.getElementById('alertOkBtn').onclick = function() {
-                alertModal.classList.remove('active');
-                if (callback) callback();
+        confirm(title, text, onConfirm) {
+            const overlay = document.getElementById('modalOverlay');
+            const titleEl = document.getElementById('modalTitle');
+            const textEl = document.getElementById('modalText');
+            const confirmBtn = document.getElementById('modalConfirmBtn');
+            const cancelBtn = document.getElementById('modalCancelBtn');
+
+            titleEl.textContent = title;
+            textEl.textContent = text;
+
+            overlay.classList.add('active');
+
+            const close = () => {
+                overlay.classList.remove('active');
+                confirmBtn.onclick = null;
+                cancelBtn.onclick = null;
             };
-        }
 
-        function showConfirm(msg, onConfirm) {
-            alertMessage.textContent = msg;
-            alertActions.innerHTML = `
-                <button class="btn-danger" id="confirmYesBtn">Так</button>
-                <button class="btn-secondary" id="confirmNoBtn">Скасувати</button>
-            `;
-            alertModal.classList.add('active');
-            document.getElementById('confirmYesBtn').onclick = function() {
-                alertModal.classList.remove('active');
+            confirmBtn.onclick = () => {
+                close();
                 onConfirm();
             };
-            document.getElementById('confirmNoBtn').onclick = function() {
-                alertModal.classList.remove('active');
+
+            cancelBtn.onclick = close;
+        },
+
+        editCategory(catId, currentName, onSave) {
+            const overlay = document.getElementById('editModalOverlay');
+            const input = document.getElementById('editModalInput');
+            const saveBtn = document.getElementById('editSaveBtn');
+            const cancelBtn = document.getElementById('editCancelBtn');
+
+            input.value = currentName;
+            overlay.classList.add('active');
+            setTimeout(() => {
+                input.focus();
+                input.select();
+            }, 100);
+
+            const close = () => {
+                overlay.classList.remove('active');
+                saveBtn.onclick = null;
+                cancelBtn.onclick = null;
+                input.onkeydown = null;
+            };
+
+            const handleSave = () => {
+                const newName = input.value.trim();
+                if (newName && newName !== currentName) {
+                    close();
+                    onSave(newName);
+                } else if (!newName) {
+                    CustomUI.toast('Назва не може бути порожньою');
+                } else {
+                    close();
+                }
+            };
+
+            saveBtn.onclick = handleSave;
+            cancelBtn.onclick = close;
+
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSave();
+                }
+                if (e.key === 'Escape') {
+                    close();
+                }
             };
         }
+    };
+
+    // ===== PWA MANIFEST & SERVICE WORKER =====
+    (function initPWA() {
+        const manifestData = {
+            name: "AniNote — Блокнот аніме",
+            short_name: "AniNote",
+            start_url: ".",
+            display: "standalone",
+            background_color: "#0a0a0a",
+            theme_color: "#0a0a0a",
+            icons: [{
+                src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%230a0a0a'/%3E%3Ccircle cx='50' cy='50' r='20' fill='%23ffffff'/%3E%3C/svg%3E",
+                sizes: "512x512",
+                type: "image/svg+xml"
+            }]
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        const link = document.createElement('link');
+        link.rel = 'manifest';
+        link.href = manifestURL;
+        document.head.appendChild(link);
+
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                self.addEventListener('install', e => self.skipWaiting());
+                self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+                self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
+            `;
+            const swBlob = new Blob([swCode], {type: 'application/javascript'});
+            const swURL = URL.createObjectURL(swBlob);
+            navigator.serviceWorker.register(swURL).catch(() => {});
+        }
+    })();
+
+    // ===== ОСНОВНА ЛОГІКА ДОДАТКУ =====
+    (function() {
+        const STORAGE_KEY = 'aninote_categories_v2';
+        
+        let categories = [];
+        let deferredPrompt = null;
+        let dragData = null;
+
+        const addCatForm = document.getElementById('addCatForm');
+        const catNameInput = document.getElementById('catNameInput');
+        const categoriesContainer = document.getElementById('categoriesContainer');
+        const totalCountEl = document.getElementById('totalCount');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const importBtn = document.getElementById('importBtn');
+        const fileInput = document.getElementById('fileInput');
+        const installBtn = document.getElementById('installBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'inline-flex';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                installBtn.style.display = 'none';
+                CustomUI.toast('Додаток успішно встановлено');
+            }
+            deferredPrompt = null;
+        });
 
         function loadFromStorage() {
-            const stored = localStorage.getItem('aninote_data_store');
+            const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
-                try { animeList = JSON.parse(stored); } catch { animeList = []; }
-            } else {
-                animeList = [];
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) {
+                        categories = parsed;
+                        return;
+                    }
+                } catch (_) {}
             }
-            renderList();
+            categories = [
+                { id: 1, name: "Аніме", isOpen: true, items: [] },
+                { id: 2, name: "У планах", isOpen: false, items: [] }
+            ];
+            saveToStorage();
         }
 
         function saveToStorage() {
-            localStorage.setItem('aninote_data_store', JSON.stringify(animeList));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
         }
 
-        /* Пошукові пропозиції (Google style) */
-        searchInput.addEventListener('input', function() {
-            const query = this.value;
-            
-            if (query === ' ') {
-                renderList(true);
-                hideSuggestions();
-                return;
-            }
-
-            const cleanQuery = query.trim().toLowerCase();
-            if (!cleanQuery) {
-                hideSuggestions();
-                renderList();
-                return;
-            }
-
-            const matches = animeList.filter(item => item.title.toLowerCase().includes(cleanQuery));
-            showSuggestions(matches);
-        });
-
-        function showSuggestions(list) {
-            if (!list.length) {
-                searchSuggestions.innerHTML = '<div style="padding:0.8rem; text-align:center; color:#71717a; font-size:0.85rem;">Нічого не знайдено</div>';
-                searchSuggestions.classList.add('active');
-                return;
-            }
-
-            let html = '';
-            list.forEach(item => {
-                const cover = item.cover || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2250%22%3E%3Crect width=%2236%22 height=%2250%22 fill=%22%2309090a%22/%3E%3C/svg%3E';
-                const ratingStr = item.rating ? `★ ${item.rating}` : 'Без оцінки';
-                const dateStr = item.date ? item.date : '';
-
-                html += `
-                    <div class="suggestion-item" data-id="${item.id}">
-                        <img class="suggestion-thumb" src="${cover}" alt="" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2250%22%3E%3Crect width=%2236%22 height=%2250%22 fill=%22%2309090a%22/%3E%3C/svg%3E'" />
-                        <div class="suggestion-info">
-                            <div class="suggestion-title">${item.title}</div>
-                            <div class="suggestion-meta">${ratingStr} ${dateStr ? '• ' + dateStr : ''}</div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            searchSuggestions.innerHTML = html;
-            searchSuggestions.classList.add('active');
-
-            document.querySelectorAll('.suggestion-item').forEach(el => {
-                el.addEventListener('click', function() {
-                    const id = this.dataset.id;
-                    hideSuggestions();
-                    openDetail(id, document.querySelector(`.anime-card-wrap[data-id="${id}"]`));
-                });
-            });
-        }
-
-        function hideSuggestions() {
-            searchSuggestions.classList.remove('active');
-        }
-
-        searchInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                hideSuggestions();
-                renderList();
-            }
-        });
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.search-wrap')) {
-                hideSuggestions();
-            }
-        });
-
-        function renderList(sortByAlphabet = false) {
-            let listToRender = [...animeList];
-
-            if (sortByAlphabet) {
-                listToRender.sort((a, b) => a.title.localeCompare(b.title, 'uk'));
-            } else if (searchInput.value.trim() && searchInput.value !== ' ') {
-                const q = searchInput.value.trim().toLowerCase();
-                listToRender = listToRender.filter(item => item.title.toLowerCase().includes(q));
-            }
-
-            if (!listToRender.length) {
-                animeListEl.innerHTML = '<div class="empty-state"><p>Немає записів</p></div>';
-                return;
-            }
-            let html = '';
-            listToRender.forEach(item => {
-                const ratingStar = item.rating ? `★ ${item.rating}` : '—';
-                const genresHtml = item.genres?.map(g => `<span class="genre-badge">${g}</span>`).join(' ') || '';
-                const cover = item.cover || '';
-
-                html += `
-                    <div class="anime-card-wrap" data-id="${item.id}">
-                        <div class="anime-card-inner">
-                            <div class="anime-card-front">
-                                <div class="anime-cover-wrap">
-                                    <img class="anime-cover" src="${cover}" alt="" loading="lazy" 
-                                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22300%22%3E%3Crect width=%22200%22 height=%22300%22 fill=%22%2309090a%22/%3E%3C/svg%3E'" />
-                                </div>
-                                <div class="anime-title">${item.title}</div>
-                                <div class="anime-meta">
-                                    <span>${item.date || '—'}</span>
-                                    <span class="anime-rating">${ratingStar}</span>
-                                </div>
-                                <div class="anime-genres">${genresHtml}</div>
-                            </div>
-                            <div class="anime-card-back">
-                                <div class="back-status">Відкрити</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            animeListEl.innerHTML = html;
-
-            document.querySelectorAll('.anime-card-wrap').forEach(card => {
-                card.addEventListener('click', function() {
-                    openDetail(this.dataset.id, this);
-                });
-            });
-        }
-
-        function renderGenreTags() {
-            genreTags.innerHTML = selectedGenres.map(g =>
-                `<span class="genre-tag">${g} <span class="remove-genre" data-genre="${g}">✕</span></span>`
-            ).join('');
-            document.querySelectorAll('.remove-genre').forEach(el => {
-                el.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    selectedGenres = selectedGenres.filter(g => g !== this.dataset.genre);
-                    renderGenreTags();
-                });
-            });
-        }
-
-        addGenreBtn.addEventListener('click', function() {
-            const val = genreSelect.value;
-            if (!selectedGenres.includes(val)) {
-                selectedGenres.push(val);
-                renderGenreTags();
-            }
-        });
-
-        coverFileInput.addEventListener('change', function() {
-            const file = this.files[0];
-            if (!file) {
-                coverPreview.style.display = 'none';
-                coverPreview.src = '';
-                tempCoverData = '';
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                tempCoverData = ev.target.result;
-                coverPreview.src = tempCoverData;
-                coverPreview.style.display = 'block';
+        function getStatusClass(status) {
+            const map = {
+                'Дивлюсь': 'status-watching',
+                'У планах': 'status-planned',
+                'Переглянуто': 'status-watched'
             };
-            reader.readAsDataURL(file);
-        });
-
-        function openForm(editData = null) {
-            selectedGenres = [];
-            genreTags.innerHTML = '';
-            editIdInput.value = '';
-            currentEditId = null;
-            tempCoverData = '';
-            coverFileInput.value = '';
-            coverPreview.style.display = 'none';
-            coverPreview.src = '';
-
-            if (editData) {
-                modalTitle.textContent = 'Редагувати запис';
-                submitBtn.textContent = 'Оновити';
-                titleInput.value = editData.title || '';
-                ratingInput.value = editData.rating || '';
-                dateInput.value = editData.date || '';
-                descInput.value = editData.description || '';
-                if (editData.genres) selectedGenres = [...editData.genres];
-                editIdInput.value = editData.id;
-                currentEditId = editData.id;
-                if (editData.cover) {
-                    tempCoverData = editData.cover;
-                    coverPreview.src = editData.cover;
-                    coverPreview.style.display = 'block';
-                }
-            } else {
-                modalTitle.textContent = 'Новий запис';
-                submitBtn.textContent = 'Зберегти';
-                titleInput.value = '';
-                ratingInput.value = '';
-                dateInput.value = '';
-                descInput.value = '';
-                editIdInput.value = '';
-                currentEditId = null;
-                selectedGenres = [];
-                tempCoverData = '';
-            }
-            renderGenreTags();
-            formModal.classList.add('active');
+            return map[status] || '';
         }
 
-        function closeForm() {
-            formModal.classList.remove('active');
-        }
+        function render() {
+            let totalItems = 0;
+            categories.forEach(c => totalItems += c.items.length);
+            totalCountEl.textContent = totalItems;
 
-        document.getElementById('animeForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const title = titleInput.value.trim();
-            if (!title) { showAlert('Введіть назву'); return; }
-
-            const rating = parseInt(ratingInput.value) || null;
-            const date = dateInput.value || '';
-            const description = descInput.value.trim() || '';
-            const genres = [...selectedGenres];
-            const cover = tempCoverData || '';
-
-            const editId = editIdInput.value;
-            if (editId) {
-                const idx = animeList.findIndex(a => a.id === editId);
-                if (idx !== -1) {
-                    animeList[idx] = { ...animeList[idx], title, rating, date, cover, description, genres };
-                }
-            } else {
-                const newItem = {
-                    id: Date.now().toString() + Math.random().toString(36).substr(2, 6),
-                    title,
-                    rating,
-                    date,
-                    cover,
-                    description,
-                    genres
-                };
-                animeList.unshift(newItem);
-            }
-            saveToStorage();
-            renderList();
-            closeForm();
-        });
-
-        function openDetail(id, cardElement) {
-            const item = animeList.find(a => a.id === id);
-            if (!item) return;
-
-            currentDetailId = id;
-            activeCardWrap = cardElement;
-
-            if (activeCardWrap) {
-                activeCardWrap.classList.add('is-active');
-                const statusEl = activeCardWrap.querySelector('.back-status');
-                if (statusEl) statusEl.textContent = 'Відкрито';
+            if (categories.length === 0) {
+                categoriesContainer.innerHTML = `
+                    <div class="empty-state">
+                        Немає жодної категорії. Створіть першу категорію вище!
+                    </div>
+                `;
+                return;
             }
 
-            detailTitle.textContent = item.title || 'Без назви';
-            detailCover.src = item.cover || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22360%22 height=%22540%22%3E%3Crect width=%22360%22 height=%22540%22 fill=%22%2309090a%22/%3E%3C/svg%3E';
-            detailCover.alt = item.title;
-            const genresStr = item.genres?.length ? item.genres.join(' · ') : '—';
-            const ratingStr = item.rating ? `★ ${item.rating}` : '—';
-            detailMeta.innerHTML = `
-                <span>${item.date || '—'}</span>
-                <span>${ratingStr}</span>
-                <span>${genresStr}</span>
-            `;
-            detailDesc.textContent = item.description || 'Опис відсутній.';
-            detailModal.classList.add('active');
-        }
+            const hasMoreThanOne = categories.length > 1;
 
-        function closeDetail() {
-            detailModal.classList.remove('active');
-
-            if (activeCardWrap) {
-                activeCardWrap.classList.remove('is-active');
-                const statusEl = activeCardWrap.querySelector('.back-status');
-                if (statusEl) statusEl.textContent = 'Відкрити';
-                activeCardWrap = null;
-            }
-            currentDetailId = null;
-        }
-
-        editFromDetailBtn.addEventListener('click', function() {
-            if (!currentDetailId) return;
-            const item = animeList.find(a => a.id === currentDetailId);
-            if (item) {
-                closeDetail();
-                openForm(item);
-            }
-        });
-
-        deleteFromDetailBtn.addEventListener('click', function() {
-            if (!currentDetailId) return;
-            const item = animeList.find(a => a.id === currentDetailId);
-            if (!item) return;
-
-            showConfirm('Видалити цей запис?', function() {
-                animeList = animeList.filter(a => a.id !== currentDetailId);
-                saveToStorage();
-                renderList();
-                closeDetail();
+            let html = '';
+            categories.forEach((cat, index) => {
+                html += `
+                    <div class="category-block ${cat.isOpen ? 'open' : ''}" data-cat-id="${cat.id}" data-index="${index}">
+                        <div class="category-header" onclick="toggleCategory(${cat.id})">
+                            <div class="category-title-group">
+                                <span class="arrow-toggle">▶</span>
+                                <span class="category-name">${escapeHtml(cat.name)}</span>
+                                <span class="category-count">${cat.items.length}</span>
+                            </div>
+                            <div class="category-actions" onclick="event.stopPropagation()">
+                                <button class="cat-btn drag-handle" data-cat-id="${cat.id}" title="${hasMoreThanOne ? 'Затисніть і перетягніть для зміни порядку' : 'Доступно тільки при наявності 2+ категорій'}" ${!hasMoreThanOne ? 'disabled' : ''}>⠿</button>
+                                <button class="cat-btn" onclick="editCategoryName(${cat.id})" title="Редагувати назву">✎</button>
+                                <button class="cat-btn" onclick="deleteCategory(${cat.id})" title="Видалити категорію">✕</button>
+                            </div>
+                        </div>
+                        <div class="category-body">
+                            <form class="add-item-form" onsubmit="addAnimeItem(event, ${cat.id})">
+                                <input type="text" placeholder="Назва аніме..." required autocomplete="off" class="item-title-input">
+                                <select class="item-status-select">
+                                    <option value="Дивлюсь" selected>Дивлюсь</option>
+                                    <option value="У планах">У планах</option>
+                                    <option value="Переглянуто">Переглянуто</option>
+                                </select>
+                                <button type="submit">Додати</button>
+                            </form>
+                            <div class="anime-sublist">
+                                ${renderAnimeItems(cat)}
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
+
+            categoriesContainer.innerHTML = html;
+            initDragAndDrop();
+        }
+
+        function renderAnimeItems(cat) {
+            if (cat.items.length === 0) {
+                return `<div class="empty-substate">У цій категорії поки порожньо.</div>`;
+            }
+
+            return cat.items.map(item => {
+                const isWatched = item.status === 'Переглянуто';
+                const statusClass = getStatusClass(item.status);
+                return `
+                    <div class="anime-card ${isWatched ? 'watched' : ''}" onclick="toggleWatched(${cat.id}, ${item.id})">
+                        <div class="anime-info">
+                            <span class="anime-status ${statusClass}">${escapeHtml(item.status)}</span>
+                            <span class="anime-title">${escapeHtml(item.title)}</span>
+                        </div>
+                        <button class="delete-btn" onclick="event.stopPropagation(); deleteAnimeItem(${cat.id}, ${item.id})" title="Видалити">✕</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function generateId() {
+            return Date.now() + Math.floor(Math.random() * 1000);
+        }
+
+        // ===== DRAG & DROP ДЛЯ КАТЕГОРІЙ =====
+        function initDragAndDrop() {
+            const dragHandles = document.querySelectorAll('.drag-handle:not(:disabled)');
+            
+            dragHandles.forEach(handle => {
+                handle.removeEventListener('mousedown', dragStart);
+                handle.removeEventListener('touchstart', dragStartTouch);
+                
+                handle.addEventListener('mousedown', dragStart);
+                handle.addEventListener('touchstart', dragStartTouch, { passive: false });
+            });
+        }
+
+        function dragStart(e) {
+            e.preventDefault();
+            const button = e.currentTarget;
+            const catId = parseInt(button.dataset.catId);
+            startDrag(catId, e.clientX, e.clientY);
+        }
+
+        function dragStartTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const button = e.currentTarget;
+            const catId = parseInt(button.dataset.catId);
+            startDrag(catId, touch.clientX, touch.clientY);
+        }
+
+        function startDrag(catId, startX, startY) {
+            const index = categories.findIndex(c => c.id === catId);
+            if (index === -1) return;
+            if (categories.length <= 1) return;
+
+            const openState = {};
+            categories.forEach(c => {
+                openState[c.id] = c.isOpen;
+            });
+
+            dragData = {
+                catId: catId,
+                startIndex: index,
+                startX: startX,
+                startY: startY,
+                isDragging: false,
+                threshold: 15,
+                openState: openState
+            };
+
+            document.addEventListener('mousemove', dragMove);
+            document.addEventListener('mouseup', dragEnd);
+            document.addEventListener('touchmove', dragMoveTouch, { passive: false });
+            document.addEventListener('touchend', dragEndTouch, { passive: false });
+        }
+
+        function dragMove(e) {
+            e.preventDefault();
+            if (!dragData) return;
+            checkDragStart(e.clientX, e.clientY);
+            if (dragData.isDragging) {
+                handleDrag(e.clientX, e.clientY);
+            }
+        }
+
+        function dragMoveTouch(e) {
+            e.preventDefault();
+            if (!dragData) return;
+            const touch = e.touches[0];
+            checkDragStart(touch.clientX, touch.clientY);
+            if (dragData.isDragging) {
+                handleDrag(touch.clientX, touch.clientY);
+            }
+        }
+
+        function checkDragStart(clientX, clientY) {
+            if (!dragData || dragData.isDragging) return;
+            
+            const dx = clientX - dragData.startX;
+            const dy = clientY - dragData.startY;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            
+            if (dist > dragData.threshold) {
+                dragData.isDragging = true;
+                
+                categories.forEach(c => c.isOpen = false);
+                saveToStorage();
+                
+                document.querySelectorAll('.category-block').forEach(block => {
+                    block.classList.remove('open');
+                });
+                
+                const blocks = document.querySelectorAll('.category-block');
+                blocks.forEach(block => {
+                    if (parseInt(block.dataset.catId) === dragData.catId) {
+                        block.classList.add('dragging');
+                    }
+                });
+            }
+        }
+
+        function handleDrag(clientX, clientY) {
+            if (!dragData || !dragData.isDragging) return;
+
+            const elements = document.elementsFromPoint(clientX, clientY);
+            let targetBlock = null;
+            
+            for (let el of elements) {
+                if (el.classList && el.classList.contains('category-block')) {
+                    targetBlock = el;
+                    break;
+                }
+            }
+
+            document.querySelectorAll('.category-block.drag-over').forEach(el => {
+                el.classList.remove('drag-over');
+            });
+
+            if (targetBlock) {
+                const targetId = parseInt(targetBlock.dataset.catId);
+                if (targetId !== dragData.catId) {
+                    targetBlock.classList.add('drag-over');
+                    dragData.targetId = targetId;
+                } else {
+                    dragData.targetId = null;
+                }
+            } else {
+                dragData.targetId = null;
+            }
+        }
+
+        function dragEnd(e) {
+            document.removeEventListener('mousemove', dragMove);
+            document.removeEventListener('mouseup', dragEnd);
+            finishDrag();
+        }
+
+        function dragEndTouch(e) {
+            document.removeEventListener('touchmove', dragMoveTouch);
+            document.removeEventListener('touchend', dragEndTouch);
+            finishDrag();
+        }
+
+        function finishDrag() {
+            if (dragData && dragData.isDragging && dragData.targetId !== undefined && dragData.targetId !== null) {
+                const fromIndex = categories.findIndex(c => c.id === dragData.catId);
+                const toIndex = categories.findIndex(c => c.id === dragData.targetId);
+                
+                if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
+                    const [item] = categories.splice(fromIndex, 1);
+                    categories.splice(toIndex, 0, item);
+                    saveToStorage();
+                    render();
+                    CustomUI.toast('Порядок категорій змінено');
+                }
+            }
+
+            if (dragData && dragData.openState) {
+                categories.forEach(c => {
+                    if (dragData.openState.hasOwnProperty(c.id)) {
+                        c.isOpen = dragData.openState[c.id];
+                    }
+                });
+                saveToStorage();
+            }
+
+            document.querySelectorAll('.category-block.dragging, .category-block.drag-over').forEach(el => {
+                el.classList.remove('dragging', 'drag-over');
+            });
+
+            render();
+            dragData = null;
+        }
+
+        // ===== ФУНКЦІЇ КАТЕГОРІЙ =====
+        window.toggleCategory = function(catId) {
+            const cat = categories.find(c => c.id === catId);
+            if (cat) {
+                cat.isOpen = !cat.isOpen;
+                saveToStorage();
+                render();
+            }
+        };
+
+        window.editCategoryName = function(catId) {
+            const cat = categories.find(c => c.id === catId);
+            if (!cat) return;
+
+            CustomUI.editCategory(catId, cat.name, (newName) => {
+                cat.name = newName;
+                saveToStorage();
+                render();
+                CustomUI.toast(`Назву змінено на "${newName}"`);
+            });
+        };
+
+        window.deleteCategory = function(catId) {
+            const cat = categories.find(c => c.id === catId);
+            if (!cat) return;
+
+            CustomUI.confirm(
+                'Видалити категорію',
+                `Видалити категорію "${cat.name}" разом із усіма її записами (${cat.items.length})?`,
+                () => {
+                    categories = categories.filter(c => c.id !== catId);
+                    saveToStorage();
+                    render();
+                    CustomUI.toast(`Категорію видалено`);
+                }
+            );
+        };
+
+        addCatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = catNameInput.value.trim();
+            if (!name) return;
+
+            categories.push({
+                id: generateId(),
+                name: name,
+                isOpen: true,
+                items: []
+            });
+
+            saveToStorage();
+            render();
+            catNameInput.value = '';
+            CustomUI.toast(`Створено категорію: "${name}"`);
         });
 
-        openCreateBtn.addEventListener('click', () => openForm(null));
-        closeModalBtn.addEventListener('click', closeForm);
-        closeDetailBtn.addEventListener('click', closeDetail);
+        // ===== ФУНКЦІЇ АНІМЕ ЕЛЕМЕНТІВ =====
+        window.addAnimeItem = function(event, catId) {
+            event.preventDefault();
+            const form = event.target;
+            const titleInput = form.querySelector('.item-title-input');
+            const statusSelect = form.querySelector('.item-status-select');
 
-        formModal.addEventListener('click', function(e) {
-            if (e.target === this) closeForm();
-        });
-        detailModal.addEventListener('click', function(e) {
-            if (e.target === this) closeDetail();
-        });
+            const title = titleInput.value.trim();
+            if (!title) return;
 
-        // Експорт / імпорт
-        const footer = document.createElement('div');
-        footer.style.marginTop = '2rem';
-        footer.style.display = 'flex';
-        footer.style.gap = '0.8rem';
-        footer.style.flexWrap = 'wrap';
-        footer.style.justifyContent = 'center';
+            const cat = categories.find(c => c.id === catId);
+            if (cat) {
+                cat.items.push({
+                    id: generateId(),
+                    title: title,
+                    status: statusSelect.value
+                });
+                saveToStorage();
+                render();
+                CustomUI.toast(`Додано: "${title}"`);
+            }
+        };
 
-        const exportBtn = document.createElement('button');
-        exportBtn.className = 'btn-secondary';
-        exportBtn.textContent = 'Експорт';
-        exportBtn.addEventListener('click', function() {
-            const data = localStorage.getItem('aninote_data_store');
-            if (!data) { showAlert('Немає даних для експорту'); return; }
-            const blob = new Blob([data], { type: 'application/json' });
+        window.toggleWatched = function(catId, itemId) {
+            const cat = categories.find(c => c.id === catId);
+            if (!cat) return;
+            const item = cat.items.find(i => i.id === itemId);
+            if (!item) return;
+
+            const statuses = ['Дивлюсь', 'Переглянуто', 'У планах'];
+            const currentIndex = statuses.indexOf(item.status);
+            const nextIndex = (currentIndex + 1) % statuses.length;
+            item.status = statuses[nextIndex];
+            
+            saveToStorage();
+            render();
+            CustomUI.toast(`Статус: ${item.status}`);
+        };
+
+        window.deleteAnimeItem = function(catId, itemId) {
+            const cat = categories.find(c => c.id === catId);
+            if (!cat) return;
+
+            const item = cat.items.find(i => i.id === itemId);
+            cat.items = cat.items.filter(i => i.id !== itemId);
+            saveToStorage();
+            render();
+            if (item) CustomUI.toast(`Видалено: "${item.title}"`);
+        };
+
+        // ===== ЕКСПОРТ / ІМПОРТ / ОЧИЩЕННЯ =====
+        function clearAll() {
+            if (categories.length === 0) {
+                CustomUI.toast('Все вже порожньо');
+                return;
+            }
+            CustomUI.confirm(
+                'Очистити все',
+                'Ви впевнені, що хочете повністю видалити ВСІ категорії та записи?',
+                () => {
+                    categories = [];
+                    saveToStorage();
+                    render();
+                    CustomUI.toast('Усі дані видалено');
+                }
+            );
+        }
+
+        function exportData() {
+            if (categories.length === 0) {
+                CustomUI.toast('Нічого експортувати');
+                return;
+            }
+
+            const dataStr = JSON.stringify(categories, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'aninote_backup.json';
+            a.href = url;
+            a.download = `aninote_backup_${new Date().toISOString().slice(0,10)}.json`;
             a.click();
-            URL.revokeObjectURL(a.href);
-        });
+            URL.revokeObjectURL(url);
+            CustomUI.toast('Файл збережено');
+        }
 
-        const importBtn = document.createElement('button');
-        importBtn.className = 'btn-secondary';
-        importBtn.textContent = 'Імпорт';
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.accept = '.json';
-        fileInput.style.display = 'none';
-        importBtn.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', function() {
-            const file = this.files[0];
-            if (!file) return;
+        function importData(file) {
             const reader = new FileReader();
-            reader.onload = function(ev) {
+            reader.onload = function(e) {
                 try {
-                    const imported = JSON.parse(ev.target.result);
-                    if (Array.isArray(imported)) {
-                        animeList = imported;
-                        saveToStorage();
-                        renderList();
-                        showAlert('Імпорт успішно виконано!');
-                    } else showAlert('Невірний формат файлу');
-                } catch { showAlert('Помилка зчитування файлу'); }
-                fileInput.value = '';
+                    const imported = JSON.parse(e.target.result);
+                    if (!Array.isArray(imported)) {
+                        CustomUI.toast('Некоректний формат файлу');
+                        return;
+                    }
+
+                    CustomUI.confirm(
+                        'Імпорт даних',
+                        `Замінити всі дані на ${imported.length} категорій з файлу?`,
+                        () => {
+                            categories = imported;
+                            saveToStorage();
+                            render();
+                            CustomUI.toast('Успішно імпортовано');
+                        }
+                    );
+                } catch (err) {
+                    CustomUI.toast('Помилка зчитування файлу');
+                }
             };
             reader.readAsText(file);
+        }
+
+        clearAllBtn.addEventListener('click', clearAll);
+        exportBtn.addEventListener('click', exportData);
+        importBtn.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                importData(this.files[0]);
+                this.value = '';
+            }
         });
 
-        footer.appendChild(exportBtn);
-        footer.appendChild(importBtn);
-        document.querySelector('.app').appendChild(footer);
-
         loadFromStorage();
+        render();
     })();
 </script>
 </body>
