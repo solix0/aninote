@@ -62,6 +62,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-shrink: 0;
         }
 
         .logo-symbol {
@@ -75,6 +76,8 @@
             padding: 8px 18px;
             border-radius: 30px;
             border: 1px solid var(--border);
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .stats strong {
@@ -172,18 +175,6 @@
             background: var(--surface-hover);
             color: var(--text-main);
             border-color: #555555;
-        }
-
-        .btn-install {
-            color: #ffffff;
-            border-color: #555555;
-            background: #1a1a1a;
-            display: none;
-        }
-
-        .btn-install:hover {
-            background: #ffffff;
-            color: #000000;
         }
 
         .btn-danger-text:hover {
@@ -748,15 +739,17 @@
 
         @media (max-width: 400px) {
             .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
+                flex-wrap: wrap;
+                gap: 6px 12px;
             }
-            
             .logo {
                 font-size: 24px;
             }
-            
+            .stats {
+                font-size: 15px;
+                padding: 8px 18px;
+                margin-left: auto;
+            }
             .category-name {
                 font-size: 15px;
             }
@@ -785,7 +778,6 @@
     <div class="control-bar">
         <h2>Категорії</h2>
         <div class="control-group">
-            <button class="btn btn-sm btn-install" id="installBtn">📲 Встановити</button>
             <button class="btn btn-sm" id="exportBtn">Експорт</button>
             <button class="btn btn-sm" id="importBtn">Імпорт</button>
             <button class="btn btn-sm btn-danger-text" id="clearAllBtn">Очистити все</button>
@@ -920,46 +912,11 @@
         }
     };
 
-    // ===== PWA MANIFEST & SERVICE WORKER =====
-    (function initPWA() {
-        const manifestData = {
-            name: "AniNote — Блокнот аніме",
-            short_name: "AniNote",
-            start_url: ".",
-            display: "standalone",
-            background_color: "#0a0a0a",
-            theme_color: "#0a0a0a",
-            icons: [{
-                src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%230a0a0a'/%3E%3Ccircle cx='50' cy='50' r='20' fill='%23ffffff'/%3E%3C/svg%3E",
-                sizes: "512x512",
-                type: "image/svg+xml"
-            }]
-        };
-        const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
-        const manifestURL = URL.createObjectURL(manifestBlob);
-        const link = document.createElement('link');
-        link.rel = 'manifest';
-        link.href = manifestURL;
-        document.head.appendChild(link);
-
-        if ('serviceWorker' in navigator) {
-            const swCode = `
-                self.addEventListener('install', e => self.skipWaiting());
-                self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
-                self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
-            `;
-            const swBlob = new Blob([swCode], {type: 'application/javascript'});
-            const swURL = URL.createObjectURL(swBlob);
-            navigator.serviceWorker.register(swURL).catch(() => {});
-        }
-    })();
-
     // ===== ОСНОВНА ЛОГІКА ДОДАТКУ =====
     (function() {
         const STORAGE_KEY = 'aninote_categories_v2';
         
         let categories = [];
-        let deferredPrompt = null;
         let dragData = null;
 
         const addCatForm = document.getElementById('addCatForm');
@@ -970,24 +927,6 @@
         const exportBtn = document.getElementById('exportBtn');
         const importBtn = document.getElementById('importBtn');
         const fileInput = document.getElementById('fileInput');
-        const installBtn = document.getElementById('installBtn');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'inline-flex';
-        });
-
-        installBtn.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                installBtn.style.display = 'none';
-                CustomUI.toast('Додаток успішно встановлено');
-            }
-            deferredPrompt = null;
-        });
 
         function loadFromStorage() {
             const stored = localStorage.getItem(STORAGE_KEY);
