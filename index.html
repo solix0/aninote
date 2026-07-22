@@ -402,11 +402,11 @@
             background: var(--bg);
             border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 12px 16px;
+            padding: 10px 14px;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
-            gap: 12px;
+            gap: 10px;
             cursor: pointer;
             transition: all 0.2s ease;
         }
@@ -426,7 +426,7 @@
 
         .anime-info {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 12px;
             min-width: 0;
             flex: 1;
@@ -441,6 +441,7 @@
             letter-spacing: 0.3px;
             text-transform: uppercase;
             transition: all 0.2s ease;
+            margin-top: 1px;
         }
 
         .anime-status.status-watching {
@@ -464,27 +465,43 @@
         .anime-title {
             font-size: 15px;
             font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            transition: color 0.2s ease;
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.4;
+            flex: 1;
+            min-width: 0;
         }
 
-        .delete-btn {
+        .anime-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+            padding-top: 1px;
+        }
+
+        .anime-btn {
             background: none;
-            border: none;
+            border: 1px solid var(--border);
             color: var(--text-muted);
-            font-size: 18px;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
             cursor: pointer;
-            padding: 2px 6px;
-            border-radius: 4px;
-            line-height: 1;
-            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            transition: all 0.15s;
+            user-select: none;
             flex-shrink: 0;
         }
 
-        .delete-btn:hover {
+        .anime-btn:hover {
             color: #ffffff;
+            border-color: #555555;
+            background: var(--surface-hover);
         }
 
         .empty-substate {
@@ -807,7 +824,7 @@
     </div>
 </div>
 
-<!-- МОДАЛЬНЕ ВІКНО РЕДАГУВАННЯ НАЗВИ -->
+<!-- МОДАЛЬНЕ ВІКНО РЕДАГУВАННЯ НАЗВИ КАТЕГОРІЇ -->
 <div class="modal-overlay" id="editModalOverlay">
     <div class="modal-box">
         <div class="modal-content">
@@ -818,6 +835,21 @@
         <div class="modal-actions">
             <button class="modal-btn cancel-action" id="editCancelBtn">Скасувати</button>
             <button class="modal-btn confirm-action" id="editSaveBtn">Зберегти</button>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНЕ ВІКНО РЕДАГУВАННЯ НАЗВИ АНІМЕ -->
+<div class="modal-overlay" id="editAnimeModalOverlay">
+    <div class="modal-box">
+        <div class="modal-content">
+            <div class="modal-title" id="editAnimeModalTitle">Редагувати назву</div>
+            <div class="modal-text" id="editAnimeModalText">Введіть нову назву для аніме</div>
+            <input type="text" class="modal-input" id="editAnimeModalInput" placeholder="Нова назва..." autocomplete="off">
+        </div>
+        <div class="modal-actions">
+            <button class="modal-btn cancel-action" id="editAnimeCancelBtn">Скасувати</button>
+            <button class="modal-btn confirm-action" id="editAnimeSaveBtn">Зберегти</button>
         </div>
     </div>
 </div>
@@ -909,6 +941,52 @@
                     close();
                 }
             };
+        },
+
+        editAnime(catId, itemId, currentName, onSave) {
+            const overlay = document.getElementById('editAnimeModalOverlay');
+            const input = document.getElementById('editAnimeModalInput');
+            const saveBtn = document.getElementById('editAnimeSaveBtn');
+            const cancelBtn = document.getElementById('editAnimeCancelBtn');
+
+            input.value = currentName;
+            overlay.classList.add('active');
+            setTimeout(() => {
+                input.focus();
+                input.select();
+            }, 100);
+
+            const close = () => {
+                overlay.classList.remove('active');
+                saveBtn.onclick = null;
+                cancelBtn.onclick = null;
+                input.onkeydown = null;
+            };
+
+            const handleSave = () => {
+                const newName = input.value.trim();
+                if (newName && newName !== currentName) {
+                    close();
+                    onSave(newName);
+                } else if (!newName) {
+                    CustomUI.toast('Назва не може бути порожньою');
+                } else {
+                    close();
+                }
+            };
+
+            saveBtn.onclick = handleSave;
+            cancelBtn.onclick = close;
+
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSave();
+                }
+                if (e.key === 'Escape') {
+                    close();
+                }
+            };
         }
     };
 
@@ -939,7 +1017,6 @@
                     }
                 } catch (_) {}
             }
-            // Порожній масив — жодних категорій за замовчуванням
             categories = [];
             saveToStorage();
         }
@@ -1025,7 +1102,10 @@
                             <span class="anime-status ${statusClass}">${escapeHtml(item.status)}</span>
                             <span class="anime-title">${escapeHtml(item.title)}</span>
                         </div>
-                        <button class="delete-btn" onclick="event.stopPropagation(); deleteAnimeItem(${cat.id}, ${item.id})" title="Видалити">✕</button>
+                        <div class="anime-actions" onclick="event.stopPropagation()">
+                            <button class="anime-btn" onclick="editAnimeName(${cat.id}, ${item.id})" title="Редагувати назву">✎</button>
+                            <button class="anime-btn" onclick="deleteAnimeItem(${cat.id}, ${item.id})" title="Видалити">✕</button>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -1292,6 +1372,20 @@
             }
         };
 
+        window.editAnimeName = function(catId, itemId) {
+            const cat = categories.find(c => c.id === catId);
+            if (!cat) return;
+            const item = cat.items.find(i => i.id === itemId);
+            if (!item) return;
+
+            CustomUI.editAnime(catId, itemId, item.title, (newName) => {
+                item.title = newName;
+                saveToStorage();
+                render();
+                CustomUI.toast(`Назву змінено на "${newName}"`);
+            });
+        };
+
         window.toggleWatched = function(catId, itemId) {
             const cat = categories.find(c => c.id === catId);
             if (!cat) return;
@@ -1311,12 +1405,19 @@
         window.deleteAnimeItem = function(catId, itemId) {
             const cat = categories.find(c => c.id === catId);
             if (!cat) return;
-
             const item = cat.items.find(i => i.id === itemId);
-            cat.items = cat.items.filter(i => i.id !== itemId);
-            saveToStorage();
-            render();
-            if (item) CustomUI.toast(`Видалено: "${item.title}"`);
+            if (!item) return;
+
+            CustomUI.confirm(
+                'Видалити аніме',
+                `Видалити "${item.title}" з категорії "${cat.name}"?`,
+                () => {
+                    cat.items = cat.items.filter(i => i.id !== itemId);
+                    saveToStorage();
+                    render();
+                    CustomUI.toast(`Видалено: "${item.title}"`);
+                }
+            );
         };
 
         // ===== ЕКСПОРТ / ІМПОРТ / ОЧИЩЕННЯ =====
