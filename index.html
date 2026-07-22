@@ -939,10 +939,8 @@
                     }
                 } catch (_) {}
             }
-            categories = [
-                { id: 1, name: "Аніме", isOpen: true, items: [] },
-                { id: 2, name: "У планах", isOpen: false, items: [] }
-            ];
+            // Порожній масив — жодних категорій за замовчуванням
+            categories = [];
             saveToStorage();
         }
 
