@@ -14,6 +14,7 @@
             --bg: #0a0a0a;
             --surface: #141414;
             --surface-hover: #1e1e1e;
+            --subsurface: #191919;
             --border: #2e2e2e;
             --text-main: #ffffff;
             --text-muted: #8e8e8e;
@@ -63,10 +64,6 @@
             align-items: center;
             gap: 10px;
             flex-shrink: 0;
-        }
-
-        .logo-symbol {
-            font-size: 20px;
         }
 
         .stats {
@@ -183,7 +180,7 @@
             background: #1e1e1e;
         }
 
-        /* ===== КАТЕГОРІЇ ТА СПИСКИ ===== */
+        /* ===== КАТЕГОРІЇ ТА ПІДКАТЕГОРІЇ ===== */
         .categories-container {
             display: flex;
             flex-direction: column;
@@ -199,12 +196,12 @@
             cursor: default;
         }
 
-        .category-block.dragging {
+        .category-block.dragging, .subcategory-block.dragging {
             opacity: 0.4;
             transform: scale(0.98);
         }
 
-        .category-block.drag-over {
+        .category-block.drag-over, .subcategory-block.drag-over {
             border-color: #ffffff;
             box-shadow: 0 0 20px rgba(255,255,255,0.05);
         }
@@ -244,7 +241,7 @@
             font-weight: 300;
         }
 
-        .category-block.open .arrow-toggle {
+        .category-block.open .arrow-toggle, .subcategory-block.open .arrow-toggle {
             transform: rotate(90deg);
         }
 
@@ -306,21 +303,17 @@
             background: none !important;
         }
 
-        .cat-btn.drag-handle {
+        .cat-btn.drag-handle, .cat-btn.subcat-drag-handle {
             cursor: grab;
             touch-action: none;
             font-size: 16px;
         }
 
-        .cat-btn.drag-handle:active {
+        .cat-btn.drag-handle:active, .cat-btn.subcat-drag-handle:active {
             cursor: grabbing;
         }
 
-        .cat-btn.drag-handle:hover:not(:disabled) {
-            cursor: grab;
-        }
-
-        /* ТІЛО КАТЕГОРІЇ (СХОВАНЕ/ВІДКРИТЕ) */
+        /* ТІЛО КАТЕГОРІЇ */
         .category-body {
             display: none;
             padding: 16px 20px;
@@ -336,10 +329,110 @@
             display: block;
         }
 
-        .add-item-form {
+        /* ФОРМА ДОДАВАННЯ ПІДКАТЕГОРІЇ */
+        .add-subcat-form {
             display: flex;
             gap: 8px;
             margin-bottom: 16px;
+        }
+
+        .add-subcat-form input {
+            flex: 1;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 14px;
+            color: #ffffff;
+            outline: none;
+            min-width: 0;
+        }
+
+        .add-subcat-form input:focus {
+            border-color: #555555;
+        }
+
+        .add-subcat-form button {
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid #ffffff;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .add-subcat-form button:hover {
+            background: #e0e0e0;
+            border-color: #e0e0e0;
+        }
+
+        /* СПИСОК ПІДКАТЕГОРІЙ */
+        .subcategories-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .subcategory-block {
+            background: var(--subsurface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.2s, opacity 0.2s, transform 0.2s;
+        }
+
+        .subcategory-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.01);
+            cursor: pointer;
+            user-select: none;
+            border-bottom: 1px solid transparent;
+            transition: border-bottom-color 0.2s ease;
+        }
+
+        .subcategory-block.open .subcategory-header {
+            border-bottom-color: var(--border);
+        }
+
+        .subcategory-title-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .subcategory-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .subcategory-body {
+            display: none;
+            padding: 14px 16px;
+        }
+
+        .subcategory-block.open .subcategory-body {
+            display: block;
+        }
+
+        /* ФОРМА ДОДАВАННЯ ЕЛЕМЕНТА */
+        .add-item-form {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
             width: 100%;
         }
 
@@ -383,15 +476,13 @@
             transition: background 0.2s;
             white-space: nowrap;
             flex-shrink: 0;
-            min-height: 44px;
-            min-width: 44px;
         }
 
         .add-item-form button:hover {
             background: #e0e0e0;
         }
 
-        /* СПИСОК АНІМЕ ВСЕРЕДИНІ КАТЕГОРІЇ */
+        /* СПИСОК АНІМЕ/ФІЛЬМІВ */
         .anime-sublist {
             display: flex;
             flex-direction: column;
@@ -441,7 +532,6 @@
             flex-shrink: 0;
             letter-spacing: 0.3px;
             text-transform: uppercase;
-            transition: all 0.2s ease;
         }
 
         .anime-status.status-watching {
@@ -505,14 +595,13 @@
 
         .empty-substate {
             text-align: center;
-            padding: 20px;
+            padding: 16px;
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: 13px;
             border: 1px dashed var(--border);
-            border-radius: 10px;
+            border-radius: 8px;
         }
 
-        /* ===== ПОРОЖНІЙ СТАН ДОДАТКУ ===== */
         .empty-state {
             text-align: center;
             padding: 56px 20px;
@@ -526,7 +615,7 @@
             display: none;
         }
 
-        /* ===== СПОВІЩЕННЯ ТА МАКСИМАЛЬНО СТРОГІ ВІКНА ===== */
+        /* ===== СПОВІЩЕННЯ ТА МОДАЛЬНІ ВІКНА ===== */
         .toast-container {
             position: fixed;
             top: 24px;
@@ -557,7 +646,6 @@
             align-items: center;
             justify-content: space-between;
             animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            letter-spacing: -0.2px;
         }
 
         .toast-item.hide {
@@ -574,7 +662,6 @@
             to { opacity: 0; transform: translateY(-10px) scale(0.96); }
         }
 
-        /* Модальне вікно */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -640,15 +727,10 @@
             color: #ffffff;
             outline: none;
             margin-top: 12px;
-            transition: border-color 0.2s;
         }
 
         .modal-input:focus {
             border-color: #ffffff;
-        }
-
-        .modal-input::placeholder {
-            color: var(--text-muted);
         }
 
         .modal-actions {
@@ -665,7 +747,6 @@
             font-weight: 500;
             color: var(--text-muted);
             cursor: pointer;
-            outline: none;
             transition: background 0.2s, color 0.2s;
         }
 
@@ -674,22 +755,7 @@
             color: var(--text-main);
         }
 
-        .modal-btn.confirm-action {
-            color: #ffffff;
-            font-weight: 500;
-        }
-
-        .modal-btn.confirm-action:hover {
-            background: var(--surface-hover);
-            color: #ffffff;
-        }
-
-        .modal-btn.cancel-action {
-            color: #ffffff;
-        }
-
-        .modal-btn.cancel-action:hover {
-            background: var(--surface-hover);
+        .modal-btn.confirm-action, .modal-btn.cancel-action {
             color: #ffffff;
         }
 
@@ -697,78 +763,16 @@
             border-left: 1px solid var(--border);
         }
 
-        /* ===== МОБІЛЬНІ АДАПТАЦІЇ ===== */
         @media (max-width: 600px) {
-            body { 
-                padding: 24px 12px; 
-            }
-            
-            .add-cat-form { 
-                flex-direction: column; 
-            }
-            
-            .add-cat-form .btn {
-                width: 100%;
-            }
-            
-            .control-bar { 
-                flex-direction: column; 
-                align-items: flex-start; 
-                gap: 12px; 
-            }
-            
-            .control-group { 
-                width: 100%; 
-            }
-            
-            .btn-sm { 
-                flex: 1; 
-                text-align: center; 
-            }
-            
-            .add-item-form { 
-                flex-direction: column; 
-            }
-            
-            .add-item-form input {
-                width: 100%;
-            }
-            
-            .add-item-form select {
-                width: 100%;
-            }
-            
-            .add-item-form button {
-                width: 100%;
-                padding: 12px 16px;
-                min-height: 44px;
-            }
-            
-            .category-header {
-                padding: 14px 16px;
-            }
-            
-            .category-body {
-                padding: 12px 16px;
-            }
-        }
-
-        @media (max-width: 400px) {
-            .header {
-                flex-wrap: wrap;
-                gap: 6px 12px;
-            }
-            .logo {
-                font-size: 24px;
-            }
-            .stats {
-                font-size: 15px;
-                padding: 8px 18px;
-                margin-left: auto;
-            }
-            .category-name {
-                font-size: 15px;
-            }
+            body { padding: 24px 12px; }
+            .add-cat-form { flex-direction: column; }
+            .add-cat-form .btn { width: 100%; }
+            .control-bar { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .control-group { width: 100%; }
+            .btn-sm { flex: 1; text-align: center; }
+            .add-item-form, .add-subcat-form { flex-direction: column; }
+            .add-item-form input, .add-item-form select, .add-item-form button,
+            .add-subcat-form input, .add-subcat-form button { width: 100%; }
         }
     </style>
 </head>
@@ -776,17 +780,13 @@
 <div class="app">
     <!-- ШАПКА -->
     <div class="header">
-        <div class="logo">
-            AniNote
-        </div>
-        <div class="stats">
-            Всього тайтлів: <strong id="totalCount">0</strong>
-        </div>
+        <div class="logo">AniNote</div>
+        <div class="stats">Всього тайтлів: <strong id="totalCount">0</strong></div>
     </div>
 
     <!-- СТВОРЕННЯ НОВОЇ КАТЕГОРІЇ -->
     <form class="add-cat-form" id="addCatForm">
-        <input type="text" id="catNameInput" placeholder="Назва нової категорії ..." required autocomplete="off">
+        <input type="text" id="catNameInput" placeholder="Назва категорії..." required autocomplete="off">
         <button type="submit" class="btn btn-primary">Створити категорію</button>
     </form>
 
@@ -828,7 +828,7 @@
     <div class="modal-box">
         <div class="modal-content">
             <div class="modal-title" id="editModalTitle">Редагувати назву</div>
-            <div class="modal-text" id="editModalText">Введіть нову назву для категорії</div>
+            <div class="modal-text" id="editModalText">Введіть нову назву</div>
             <input type="text" class="modal-input" id="editModalInput" placeholder="Нова назва..." autocomplete="off">
         </div>
         <div class="modal-actions">
@@ -838,32 +838,14 @@
     </div>
 </div>
 
-<!-- МОДАЛЬНЕ ВІКНО РЕДАГУВАННЯ НАЗВИ АНІМЕ -->
-<div class="modal-overlay" id="editAnimeModalOverlay">
-    <div class="modal-box">
-        <div class="modal-content">
-            <div class="modal-title" id="editAnimeModalTitle">Редагувати назву</div>
-            <div class="modal-text" id="editAnimeModalText">Введіть нову назву для аніме</div>
-            <input type="text" class="modal-input" id="editAnimeModalInput" placeholder="Нова назва..." autocomplete="off">
-        </div>
-        <div class="modal-actions">
-            <button class="modal-btn cancel-action" id="editAnimeCancelBtn">Скасувати</button>
-            <button class="modal-btn confirm-action" id="editAnimeSaveBtn">Зберегти</button>
-        </div>
-    </div>
-</div>
-
 <script>
-    // ===== СИСТЕМА СПОВІЩЕНЬ МОНОХРОМ =====
     const CustomUI = {
         toast(message, duration = 2500) {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = 'toast-item';
             toast.innerHTML = `<span>${message}</span>`;
-            
             container.appendChild(toast);
-
             setTimeout(() => {
                 toast.classList.add('hide');
                 toast.addEventListener('animationend', () => toast.remove());
@@ -872,15 +854,12 @@
 
         confirm(title, text, onConfirm) {
             const overlay = document.getElementById('modalOverlay');
-            const titleEl = document.getElementById('modalTitle');
-            const textEl = document.getElementById('modalText');
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalText').textContent = text;
+            overlay.classList.add('active');
+
             const confirmBtn = document.getElementById('modalConfirmBtn');
             const cancelBtn = document.getElementById('modalCancelBtn');
-
-            titleEl.textContent = title;
-            textEl.textContent = text;
-
-            overlay.classList.add('active');
 
             const close = () => {
                 overlay.classList.remove('active');
@@ -888,27 +867,23 @@
                 cancelBtn.onclick = null;
             };
 
-            confirmBtn.onclick = () => {
-                close();
-                onConfirm();
-            };
-
+            confirmBtn.onclick = () => { close(); onConfirm(); };
             cancelBtn.onclick = close;
         },
 
-        editCategory(catId, currentName, onSave) {
+        editPrompt(title, text, currentName, onSave) {
             const overlay = document.getElementById('editModalOverlay');
             const input = document.getElementById('editModalInput');
+            document.getElementById('editModalTitle').textContent = title;
+            document.getElementById('editModalText').textContent = text;
+            input.value = currentName;
+            
+            overlay.classList.add('active');
+            setTimeout(() => { input.focus(); input.select(); }, 100);
+
             const saveBtn = document.getElementById('editSaveBtn');
             const cancelBtn = document.getElementById('editCancelBtn');
 
-            input.value = currentName;
-            overlay.classList.add('active');
-            setTimeout(() => {
-                input.focus();
-                input.select();
-            }, 100);
-
             const close = () => {
                 overlay.classList.remove('active');
                 saveBtn.onclick = null;
@@ -930,71 +905,18 @@
 
             saveBtn.onclick = handleSave;
             cancelBtn.onclick = close;
-
             input.onkeydown = (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleSave();
-                }
-                if (e.key === 'Escape') {
-                    close();
-                }
-            };
-        },
-
-        editAnime(catId, itemId, currentName, onSave) {
-            const overlay = document.getElementById('editAnimeModalOverlay');
-            const input = document.getElementById('editAnimeModalInput');
-            const saveBtn = document.getElementById('editAnimeSaveBtn');
-            const cancelBtn = document.getElementById('editAnimeCancelBtn');
-
-            input.value = currentName;
-            overlay.classList.add('active');
-            setTimeout(() => {
-                input.focus();
-                input.select();
-            }, 100);
-
-            const close = () => {
-                overlay.classList.remove('active');
-                saveBtn.onclick = null;
-                cancelBtn.onclick = null;
-                input.onkeydown = null;
-            };
-
-            const handleSave = () => {
-                const newName = input.value.trim();
-                if (newName && newName !== currentName) {
-                    close();
-                    onSave(newName);
-                } else if (!newName) {
-                    CustomUI.toast('Назва не може бути порожньою');
-                } else {
-                    close();
-                }
-            };
-
-            saveBtn.onclick = handleSave;
-            cancelBtn.onclick = close;
-
-            input.onkeydown = (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleSave();
-                }
-                if (e.key === 'Escape') {
-                    close();
-                }
+                if (e.key === 'Enter') { e.preventDefault(); handleSave(); }
+                if (e.key === 'Escape') { close(); }
             };
         }
     };
 
-    // ===== ОСНОВНА ЛОГІКА ДОДАТКУ =====
     (function() {
-        const STORAGE_KEY = 'aninote_categories_v2';
-        
+        const STORAGE_KEY = 'aninote_categories_v4';
         let categories = [];
         let dragData = null;
+        let subDragData = null;
 
         const addCatForm = document.getElementById('addCatForm');
         const catNameInput = document.getElementById('catNameInput');
@@ -1011,7 +933,18 @@
                 try {
                     const parsed = JSON.parse(stored);
                     if (Array.isArray(parsed)) {
-                        categories = parsed;
+                        categories = parsed.map(cat => {
+                            if (!cat.subcategories) {
+                                cat.subcategories = [{
+                                    id: generateId(),
+                                    name: 'Загальні',
+                                    isOpen: true,
+                                    items: cat.items || []
+                                }];
+                                delete cat.items;
+                            }
+                            return cat;
+                        });
                         return;
                     }
                 } catch (_) {}
@@ -1022,6 +955,10 @@
 
         function saveToStorage() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
+        }
+
+        function generateId() {
+            return Date.now() + Math.floor(Math.random() * 1000);
         }
 
         function getStatusClass(status) {
@@ -1035,13 +972,17 @@
 
         function render() {
             let totalItems = 0;
-            categories.forEach(c => totalItems += c.items.length);
+            categories.forEach(c => {
+                if (c.subcategories) {
+                    c.subcategories.forEach(sc => totalItems += sc.items.length);
+                }
+            });
             totalCountEl.textContent = totalItems;
 
             if (categories.length === 0) {
                 categoriesContainer.innerHTML = `
                     <div class="empty-state">
-                        Немає жодної категорії. Створіть першу категорію вище!
+                        Немає жодної категорії. Створіть першу категорію вище.
                     </div>
                 `;
                 return;
@@ -1051,13 +992,18 @@
 
             let html = '';
             categories.forEach((cat, index) => {
+                let catTotalItems = 0;
+                if (cat.subcategories) {
+                    cat.subcategories.forEach(sc => catTotalItems += sc.items.length);
+                }
+
                 html += `
                     <div class="category-block ${cat.isOpen ? 'open' : ''}" data-cat-id="${cat.id}" data-index="${index}">
                         <div class="category-header" onclick="toggleCategory(${cat.id})">
                             <div class="category-title-group">
                                 <span class="arrow-toggle">▶</span>
                                 <span class="category-name">${escapeHtml(cat.name)}</span>
-                                <span class="category-count">${cat.items.length}</span>
+                                <span class="category-count">${catTotalItems}</span>
                             </div>
                             <div class="category-actions" onclick="event.stopPropagation()">
                                 <button class="cat-btn drag-handle" data-cat-id="${cat.id}" title="${hasMoreThanOne ? 'Затисніть і перетягніть для зміни порядку' : 'Доступно тільки при наявності 2+ категорій'}" ${!hasMoreThanOne ? 'disabled' : ''}>⠿</button>
@@ -1066,17 +1012,12 @@
                             </div>
                         </div>
                         <div class="category-body">
-                            <form class="add-item-form" onsubmit="addAnimeItem(event, ${cat.id})">
-                                <input type="text" placeholder="Назва аніме..." required autocomplete="off" class="item-title-input">
-                                <select class="item-status-select">
-                                    <option value="Дивлюсь" selected>Дивлюсь</option>
-                                    <option value="У планах">У планах</option>
-                                    <option value="Переглянуто">Переглянуто</option>
-                                </select>
-                                <button type="submit">Додати</button>
+                            <form class="add-subcat-form" onsubmit="addSubcategory(event, ${cat.id})">
+                                <input type="text" placeholder="Назва підкатегорії..." required autocomplete="off" class="subcat-name-input">
+                                <button type="submit">Створити підкатегорію</button>
                             </form>
-                            <div class="anime-sublist">
-                                ${renderAnimeItems(cat)}
+                            <div class="subcategories-list">
+                                ${renderSubcategories(cat)}
                             </div>
                         </div>
                     </div>
@@ -1087,23 +1028,64 @@
             initDragAndDrop();
         }
 
-        function renderAnimeItems(cat) {
-            if (cat.items.length === 0) {
-                return `<div class="empty-substate">У цій категорії поки порожньо.</div>`;
+        function renderSubcategories(cat) {
+            if (!cat.subcategories || cat.subcategories.length === 0) {
+                return `<div class="empty-substate">У цій категорії ще немає підкатегорій. Створіть її вище.</div>`;
             }
 
-            return cat.items.map(item => {
+            const hasMoreSub = cat.subcategories.length > 1;
+
+            return cat.subcategories.map(subCat => {
+                return `
+                    <div class="subcategory-block ${subCat.isOpen ? 'open' : ''}" data-subcat-id="${subCat.id}" data-cat-id="${cat.id}">
+                        <div class="subcategory-header" onclick="toggleSubcategory(${cat.id}, ${subCat.id})">
+                            <div class="subcategory-title-group">
+                                <span class="arrow-toggle">▶</span>
+                                <span class="subcategory-name">${escapeHtml(subCat.name)}</span>
+                                <span class="category-count">${subCat.items.length}</span>
+                            </div>
+                            <div class="category-actions" onclick="event.stopPropagation()">
+                                <button class="cat-btn subcat-drag-handle" data-cat-id="${cat.id}" data-subcat-id="${subCat.id}" title="${hasMoreSub ? 'Перетягніть для зміни порядку підкатегорій' : 'Потрібно 2+ підкатегорії'}" ${!hasMoreSub ? 'disabled' : ''}>⠿</button>
+                                <button class="cat-btn" onclick="editSubcategoryName(${cat.id}, ${subCat.id})" title="Редагувати підкатегорію">✎</button>
+                                <button class="cat-btn" onclick="deleteSubcategory(${cat.id}, ${subCat.id})" title="Видалити підкатегорію">✕</button>
+                            </div>
+                        </div>
+                        <div class="subcategory-body">
+                            <form class="add-item-form" onsubmit="addAnimeItem(event, ${cat.id}, ${subCat.id})">
+                                <input type="text" placeholder="Назва..." required autocomplete="off" class="item-title-input">
+                                <select class="item-status-select">
+                                    <option value="Дивлюсь" selected>Дивлюсь</option>
+                                    <option value="У планах">У планах</option>
+                                    <option value="Переглянуто">Переглянуто</option>
+                                </select>
+                                <button type="submit">Додати</button>
+                            </form>
+                            <div class="anime-sublist">
+                                ${renderAnimeItems(cat.id, subCat)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderAnimeItems(catId, subCat) {
+            if (subCat.items.length === 0) {
+                return `<div class="empty-substate">У цій підкатегорії порожньо.</div>`;
+            }
+
+            return subCat.items.map(item => {
                 const isWatched = item.status === 'Переглянуто';
                 const statusClass = getStatusClass(item.status);
                 return `
-                    <div class="anime-card ${isWatched ? 'watched' : ''}" onclick="toggleWatched(${cat.id}, ${item.id})">
+                    <div class="anime-card ${isWatched ? 'watched' : ''}" onclick="toggleWatched(${catId}, ${subCat.id}, ${item.id})">
                         <div class="anime-info">
                             <span class="anime-status ${statusClass}">${escapeHtml(item.status)}</span>
                             <span class="anime-title">${escapeHtml(item.title)}</span>
                         </div>
                         <div class="anime-actions" onclick="event.stopPropagation()">
-                            <button class="anime-btn" onclick="editAnimeName(${cat.id}, ${item.id})" title="Редагувати назву">✎</button>
-                            <button class="anime-btn" onclick="deleteAnimeItem(${cat.id}, ${item.id})" title="Видалити">✕</button>
+                            <button class="anime-btn" onclick="editAnimeName(${catId}, ${subCat.id}, ${item.id})" title="Редагувати назву">✎</button>
+                            <button class="anime-btn" onclick="deleteAnimeItem(${catId}, ${subCat.id}, ${item.id})" title="Видалити">✕</button>
                         </div>
                     </div>
                 `;
@@ -1116,23 +1098,26 @@
             return div.innerHTML;
         }
 
-        function generateId() {
-            return Date.now() + Math.floor(Math.random() * 1000);
-        }
-
-        // ===== DRAG & DROP ДЛЯ КАТЕГОРІЙ =====
+        // ===== DRAG & DROP ДЛЯ КАТЕГОРІЙ ТА ПІДКАТЕГОРІЙ =====
         function initDragAndDrop() {
-            const dragHandles = document.querySelectorAll('.drag-handle:not(:disabled)');
-            
-            dragHandles.forEach(handle => {
+            // Категорії
+            document.querySelectorAll('.drag-handle:not(:disabled)').forEach(handle => {
                 handle.removeEventListener('mousedown', dragStart);
                 handle.removeEventListener('touchstart', dragStartTouch);
-                
                 handle.addEventListener('mousedown', dragStart);
                 handle.addEventListener('touchstart', dragStartTouch, { passive: false });
             });
+
+            // Підкатегорії
+            document.querySelectorAll('.subcat-drag-handle:not(:disabled)').forEach(handle => {
+                handle.removeEventListener('mousedown', subDragStart);
+                handle.removeEventListener('touchstart', subDragStartTouch);
+                handle.addEventListener('mousedown', subDragStart);
+                handle.addEventListener('touchstart', subDragStartTouch, { passive: false });
+            });
         }
 
+        // --- Категорії Drag & Drop ---
         function dragStart(e) {
             e.preventDefault();
             const button = e.currentTarget;
@@ -1150,13 +1135,10 @@
 
         function startDrag(catId, startX, startY) {
             const index = categories.findIndex(c => c.id === catId);
-            if (index === -1) return;
-            if (categories.length <= 1) return;
+            if (index === -1 || categories.length <= 1) return;
 
             const openState = {};
-            categories.forEach(c => {
-                openState[c.id] = c.isOpen;
-            });
+            categories.forEach(c => { openState[c.id] = c.isOpen; });
 
             dragData = {
                 catId: catId,
@@ -1178,9 +1160,7 @@
             e.preventDefault();
             if (!dragData) return;
             checkDragStart(e.clientX, e.clientY);
-            if (dragData.isDragging) {
-                handleDrag(e.clientX, e.clientY);
-            }
+            if (dragData.isDragging) handleDrag(e.clientX, e.clientY);
         }
 
         function dragMoveTouch(e) {
@@ -1188,30 +1168,22 @@
             if (!dragData) return;
             const touch = e.touches[0];
             checkDragStart(touch.clientX, touch.clientY);
-            if (dragData.isDragging) {
-                handleDrag(touch.clientX, touch.clientY);
-            }
+            if (dragData.isDragging) handleDrag(touch.clientX, touch.clientY);
         }
 
         function checkDragStart(clientX, clientY) {
             if (!dragData || dragData.isDragging) return;
-            
             const dx = clientX - dragData.startX;
             const dy = clientY - dragData.startY;
             const dist = Math.sqrt(dx*dx + dy*dy);
             
             if (dist > dragData.threshold) {
                 dragData.isDragging = true;
-                
                 categories.forEach(c => c.isOpen = false);
                 saveToStorage();
                 
                 document.querySelectorAll('.category-block').forEach(block => {
                     block.classList.remove('open');
-                });
-                
-                const blocks = document.querySelectorAll('.category-block');
-                blocks.forEach(block => {
                     if (parseInt(block.dataset.catId) === dragData.catId) {
                         block.classList.add('dragging');
                     }
@@ -1221,7 +1193,6 @@
 
         function handleDrag(clientX, clientY) {
             if (!dragData || !dragData.isDragging) return;
-
             const elements = document.elementsFromPoint(clientX, clientY);
             let targetBlock = null;
             
@@ -1232,9 +1203,7 @@
                 }
             }
 
-            document.querySelectorAll('.category-block.drag-over').forEach(el => {
-                el.classList.remove('drag-over');
-            });
+            document.querySelectorAll('.category-block.drag-over').forEach(el => el.classList.remove('drag-over'));
 
             if (targetBlock) {
                 const targetId = parseInt(targetBlock.dataset.catId);
@@ -1249,13 +1218,13 @@
             }
         }
 
-        function dragEnd(e) {
+        function dragEnd() {
             document.removeEventListener('mousemove', dragMove);
             document.removeEventListener('mouseup', dragEnd);
             finishDrag();
         }
 
-        function dragEndTouch(e) {
+        function dragEndTouch() {
             document.removeEventListener('touchmove', dragMoveTouch);
             document.removeEventListener('touchend', dragEndTouch);
             finishDrag();
@@ -1292,7 +1261,193 @@
             dragData = null;
         }
 
-        // ===== ФУНКЦІЇ КАТЕГОРІЙ =====
+        // --- Підкатегорії Drag & Drop ---
+        function subDragStart(e) {
+            e.preventDefault();
+            const button = e.currentTarget;
+            const catId = parseInt(button.dataset.catId);
+            const subCatId = parseInt(button.dataset.subcatId);
+            startSubDrag(catId, subCatId, e.clientX, e.clientY);
+        }
+
+        function subDragStartTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const button = e.currentTarget;
+            const catId = parseInt(button.dataset.catId);
+            const subCatId = parseInt(button.dataset.subcatId);
+            startSubDrag(catId, subCatId, touch.clientX, touch.clientY);
+        }
+
+        function startSubDrag(catId, subCatId, startX, startY) {
+            const cat = categories.find(c => c.id === catId);
+            if (!cat || !cat.subcategories || cat.subcategories.length <= 1) return;
+
+            const subIndex = cat.subcategories.findIndex(sc => sc.id === subCatId);
+            if (subIndex === -1) return;
+
+            const catOpenState = {};
+            categories.forEach(c => {
+                catOpenState[c.id] = c.isOpen;
+                if (c.subcategories) {
+                    c.subcategories.forEach(sc => {
+                        catOpenState[`sub_${sc.id}`] = sc.isOpen;
+                    });
+                }
+            });
+
+            subDragData = {
+                catId: catId,
+                subCatId: subCatId,
+                startX: startX,
+                startY: startY,
+                isDragging: false,
+                threshold: 15,
+                openState: catOpenState
+            };
+
+            document.addEventListener('mousemove', subDragMove);
+            document.addEventListener('mouseup', subDragEnd);
+            document.addEventListener('touchmove', subDragMoveTouch, { passive: false });
+            document.addEventListener('touchend', subDragEndTouch, { passive: false });
+        }
+
+        function subDragMove(e) {
+            e.preventDefault();
+            if (!subDragData) return;
+            checkSubDragStart(e.clientX, e.clientY);
+            if (subDragData.isDragging) handleSubDrag(e.clientX, e.clientY);
+        }
+
+        function subDragMoveTouch(e) {
+            e.preventDefault();
+            if (!subDragData) return;
+            const touch = e.touches[0];
+            checkSubDragStart(touch.clientX, touch.clientY);
+            if (subDragData.isDragging) handleSubDrag(touch.clientX, touch.clientY);
+        }
+
+        function checkSubDragStart(clientX, clientY) {
+            if (!subDragData || subDragData.isDragging) return;
+            const dx = clientX - subDragData.startX;
+            const dy = clientY - subDragData.startY;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            
+            if (dist > subDragData.threshold) {
+                subDragData.isDragging = true;
+                
+                categories.forEach(c => {
+                    if (c.id === subDragData.catId) {
+                        c.isOpen = true;
+                        if (c.subcategories) c.subcategories.forEach(sc => sc.isOpen = false);
+                    } else {
+                        c.isOpen = false;
+                    }
+                });
+                saveToStorage();
+                
+                document.querySelectorAll('.category-block').forEach(block => {
+                    const cid = parseInt(block.dataset.catId);
+                    if (cid === subDragData.catId) {
+                        block.classList.add('open');
+                    } else {
+                        block.classList.remove('open');
+                    }
+                });
+
+                document.querySelectorAll('.subcategory-block').forEach(block => {
+                    block.classList.remove('open');
+                    if (parseInt(block.dataset.subcatId) === subDragData.subCatId) {
+                        block.classList.add('dragging');
+                    }
+                });
+            }
+        }
+
+        function handleSubDrag(clientX, clientY) {
+            if (!subDragData || !subDragData.isDragging) return;
+            const elements = document.elementsFromPoint(clientX, clientY);
+            let targetBlock = null;
+            
+            for (let el of elements) {
+                if (el.classList && el.classList.contains('subcategory-block')) {
+                    const blockCatId = parseInt(el.dataset.catId);
+                    if (blockCatId === subDragData.catId) {
+                        targetBlock = el;
+                        break;
+                    }
+                }
+            }
+
+            document.querySelectorAll('.subcategory-block.drag-over').forEach(el => el.classList.remove('drag-over'));
+
+            if (targetBlock) {
+                const targetSubId = parseInt(targetBlock.dataset.subcatId);
+                if (targetSubId !== subDragData.subCatId) {
+                    targetBlock.classList.add('drag-over');
+                    subDragData.targetSubId = targetSubId;
+                } else {
+                    subDragData.targetSubId = null;
+                }
+            } else {
+                subDragData.targetSubId = null;
+            }
+        }
+
+        function subDragEnd() {
+            document.removeEventListener('mousemove', subDragMove);
+            document.removeEventListener('mouseup', subDragEnd);
+            finishSubDrag();
+        }
+
+        function subDragEndTouch() {
+            document.removeEventListener('touchmove', subDragMoveTouch);
+            document.removeEventListener('touchend', subDragEndTouch);
+            finishSubDrag();
+        }
+
+        function finishSubDrag() {
+            if (subDragData && subDragData.isDragging && subDragData.targetSubId !== undefined && subDragData.targetSubId !== null) {
+                const cat = categories.find(c => c.id === subDragData.catId);
+                if (cat && cat.subcategories) {
+                    const fromIndex = cat.subcategories.findIndex(sc => sc.id === subDragData.subCatId);
+                    const toIndex = cat.subcategories.findIndex(sc => sc.id === subDragData.targetSubId);
+
+                    if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
+                        const [item] = cat.subcategories.splice(fromIndex, 1);
+                        cat.subcategories.splice(toIndex, 0, item);
+                        saveToStorage();
+                        render();
+                        CustomUI.toast('Порядок підкатегорій змінено');
+                    }
+                }
+            }
+
+            if (subDragData && subDragData.openState) {
+                categories.forEach(c => {
+                    if (subDragData.openState.hasOwnProperty(c.id)) {
+                        c.isOpen = subDragData.openState[c.id];
+                    }
+                    if (c.subcategories) {
+                        c.subcategories.forEach(sc => {
+                            if (subDragData.openState.hasOwnProperty(`sub_${sc.id}`)) {
+                                sc.isOpen = subDragData.openState[`sub_${sc.id}`];
+                            }
+                        });
+                    }
+                });
+                saveToStorage();
+            }
+
+            document.querySelectorAll('.subcategory-block.dragging, .subcategory-block.drag-over').forEach(el => {
+                el.classList.remove('dragging', 'drag-over');
+            });
+
+            render();
+            subDragData = null;
+        }
+
+        // ===== ГЛОБАЛЬНІ ФУНКЦІЇ ДІЙ =====
         window.toggleCategory = function(catId) {
             const cat = categories.find(c => c.id === catId);
             if (cat) {
@@ -1302,32 +1457,65 @@
             }
         };
 
+        window.toggleSubcategory = function(catId, subCatId) {
+            const cat = categories.find(c => c.id === catId);
+            if (!cat) return;
+            const subCat = cat.subcategories.find(sc => sc.id === subCatId);
+            if (subCat) {
+                subCat.isOpen = !subCat.isOpen;
+                saveToStorage();
+                render();
+            }
+        };
+
         window.editCategoryName = function(catId) {
             const cat = categories.find(c => c.id === catId);
             if (!cat) return;
-
-            CustomUI.editCategory(catId, cat.name, (newName) => {
+            CustomUI.editPrompt('Редагувати категорію', 'Введіть нову назву категорії', cat.name, (newName) => {
                 cat.name = newName;
                 saveToStorage();
                 render();
-                CustomUI.toast(`Назву змінено на "${newName}"`);
+                CustomUI.toast(`Категорію перейменовано`);
+            });
+        };
+
+        window.editSubcategoryName = function(catId, subCatId) {
+            const cat = categories.find(c => c.id === catId);
+            if (!cat) return;
+            const subCat = cat.subcategories.find(sc => sc.id === subCatId);
+            if (!subCat) return;
+
+            CustomUI.editPrompt('Редагувати підкатегорію', 'Введіть нову назву підкатегорії', subCat.name, (newName) => {
+                subCat.name = newName;
+                saveToStorage();
+                render();
+                CustomUI.toast(`Підкатегорію перейменовано`);
             });
         };
 
         window.deleteCategory = function(catId) {
             const cat = categories.find(c => c.id === catId);
             if (!cat) return;
+            CustomUI.confirm('Видалити категорію', `Видалити категорію "${cat.name}" та всі її підкатегорії?`, () => {
+                categories = categories.filter(c => c.id !== catId);
+                saveToStorage();
+                render();
+                CustomUI.toast(`Категорію видалено`);
+            });
+        };
 
-            CustomUI.confirm(
-                'Видалити категорію',
-                `Видалити категорію "${cat.name}" разом із усіма її записами (${cat.items.length})?`,
-                () => {
-                    categories = categories.filter(c => c.id !== catId);
-                    saveToStorage();
-                    render();
-                    CustomUI.toast(`Категорію видалено`);
-                }
-            );
+        window.deleteSubcategory = function(catId, subCatId) {
+            const cat = categories.find(c => c.id === catId);
+            if (!cat) return;
+            const subCat = cat.subcategories.find(sc => sc.id === subCatId);
+            if (!subCat) return;
+
+            CustomUI.confirm('Видалити підкатегорію', `Видалити підкатегорію "${subCat.name}" та її вміст?`, () => {
+                cat.subcategories = cat.subcategories.filter(sc => sc.id !== subCatId);
+                saveToStorage();
+                render();
+                CustomUI.toast(`Підкатегорію видалено`);
+            });
         };
 
         addCatForm.addEventListener('submit', (e) => {
@@ -1339,7 +1527,7 @@
                 id: generateId(),
                 name: name,
                 isOpen: true,
-                items: []
+                subcategories: []
             });
 
             saveToStorage();
@@ -1348,8 +1536,28 @@
             CustomUI.toast(`Створено категорію: "${name}"`);
         });
 
-        // ===== ФУНКЦІЇ АНІМЕ ЕЛЕМЕНТІВ =====
-        window.addAnimeItem = function(event, catId) {
+        window.addSubcategory = function(event, catId) {
+            event.preventDefault();
+            const form = event.target;
+            const input = form.querySelector('.subcat-name-input');
+            const name = input.value.trim();
+            if (!name) return;
+
+            const cat = categories.find(c => c.id === catId);
+            if (cat) {
+                cat.subcategories.push({
+                    id: generateId(),
+                    name: name,
+                    isOpen: true,
+                    items: []
+                });
+                saveToStorage();
+                render();
+                CustomUI.toast(`Створено підкатегорію: "${name}"`);
+            }
+        };
+
+        window.addAnimeItem = function(event, catId, subCatId) {
             event.preventDefault();
             const form = event.target;
             const titleInput = form.querySelector('.item-title-input');
@@ -1359,8 +1567,10 @@
             if (!title) return;
 
             const cat = categories.find(c => c.id === catId);
-            if (cat) {
-                cat.items.push({
+            if (!cat) return;
+            const subCat = cat.subcategories.find(sc => sc.id === subCatId);
+            if (subCat) {
+                subCat.items.push({
                     id: generateId(),
                     title: title,
                     status: statusSelect.value
@@ -1371,124 +1581,95 @@
             }
         };
 
-        window.editAnimeName = function(catId, itemId) {
+        window.editAnimeName = function(catId, subCatId, itemId) {
             const cat = categories.find(c => c.id === catId);
             if (!cat) return;
-            const item = cat.items.find(i => i.id === itemId);
+            const subCat = cat.subcategories.find(sc => sc.id === subCatId);
+            if (!subCat) return;
+            const item = subCat.items.find(i => i.id === itemId);
             if (!item) return;
 
-            CustomUI.editAnime(catId, itemId, item.title, (newName) => {
+            CustomUI.editPrompt('Редагувати назву', 'Введіть нову назву тайтла', item.title, (newName) => {
                 item.title = newName;
                 saveToStorage();
                 render();
-                CustomUI.toast(`Назву змінено на "${newName}"`);
+                CustomUI.toast(`Назву змінено`);
             });
         };
 
-        window.toggleWatched = function(catId, itemId) {
+        window.toggleWatched = function(catId, subCatId, itemId) {
             const cat = categories.find(c => c.id === catId);
             if (!cat) return;
-            const item = cat.items.find(i => i.id === itemId);
+            const subCat = cat.subcategories.find(sc => sc.id === subCatId);
+            if (!subCat) return;
+            const item = subCat.items.find(i => i.id === itemId);
             if (!item) return;
 
             const statuses = ['Дивлюсь', 'Переглянуто', 'У планах'];
             const currentIndex = statuses.indexOf(item.status);
-            const nextIndex = (currentIndex + 1) % statuses.length;
-            item.status = statuses[nextIndex];
+            item.status = statuses[(currentIndex + 1) % statuses.length];
             
             saveToStorage();
             render();
             CustomUI.toast(`Статус: ${item.status}`);
         };
 
-        window.deleteAnimeItem = function(catId, itemId) {
+        window.deleteAnimeItem = function(catId, subCatId, itemId) {
             const cat = categories.find(c => c.id === catId);
             if (!cat) return;
-            const item = cat.items.find(i => i.id === itemId);
+            const subCat = cat.subcategories.find(sc => sc.id === subCatId);
+            if (!subCat) return;
+            const item = subCat.items.find(i => i.id === itemId);
             if (!item) return;
 
-            CustomUI.confirm(
-                'Видалити аніме',
-                `Видалити "${item.title}" з категорії "${cat.name}"?`,
-                () => {
-                    cat.items = cat.items.filter(i => i.id !== itemId);
-                    saveToStorage();
-                    render();
-                    CustomUI.toast(`Видалено: "${item.title}"`);
-                }
-            );
+            CustomUI.confirm('Видалити тайтл', `Видалити "${item.title}"?`, () => {
+                subCat.items = subCat.items.filter(i => i.id !== itemId);
+                saveToStorage();
+                render();
+                CustomUI.toast(`Видалено`);
+            });
         };
 
-        // ===== ЕКСПОРТ / ІМПОРТ / ОЧИЩЕННЯ =====
-        function clearAll() {
-            if (categories.length === 0) {
-                CustomUI.toast('Все вже порожньо');
-                return;
-            }
-            CustomUI.confirm(
-                'Очистити все',
-                'Ви впевнені, що хочете повністю видалити ВСІ категорії та записи?',
-                () => {
-                    categories = [];
-                    saveToStorage();
-                    render();
-                    CustomUI.toast('Усі дані видалено');
-                }
-            );
-        }
+        clearAllBtn.addEventListener('click', () => {
+            if (categories.length === 0) { CustomUI.toast('Вже порожньо'); return; }
+            CustomUI.confirm('Очистити все', 'Видалити абсолютно всі категорії та підкатегорії?', () => {
+                categories = [];
+                saveToStorage();
+                render();
+                CustomUI.toast('Усі дані видалено');
+            });
+        });
 
-        function exportData() {
-            if (categories.length === 0) {
-                CustomUI.toast('Нічого експортувати');
-                return;
-            }
-
-            const dataStr = JSON.stringify(categories, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
+        exportBtn.addEventListener('click', () => {
+            if (categories.length === 0) { CustomUI.toast('Нічого експортувати'); return; }
+            const blob = new Blob([JSON.stringify(categories, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-
             const a = document.createElement('a');
             a.href = url;
             a.download = `aninote_backup_${new Date().toISOString().slice(0,10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
             CustomUI.toast('Файл збережено');
-        }
+        });
 
-        function importData(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if (!Array.isArray(imported)) {
-                        CustomUI.toast('Некоректний формат файлу');
-                        return;
-                    }
-
-                    CustomUI.confirm(
-                        'Імпорт даних',
-                        `Замінити всі дані на ${imported.length} категорій з файлу?`,
-                        () => {
-                            categories = imported;
-                            saveToStorage();
-                            render();
-                            CustomUI.toast('Успішно імпортовано');
-                        }
-                    );
-                } catch (err) {
-                    CustomUI.toast('Помилка зчитування файлу');
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        clearAllBtn.addEventListener('click', clearAll);
-        exportBtn.addEventListener('click', exportData);
         importBtn.addEventListener('click', () => fileInput.click());
 
         fileInput.addEventListener('change', function() {
             if (this.files && this.files[0]) {
-                importData(this.files[0]);
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const imported = JSON.parse(e.target.result);
+                        if (!Array.isArray(imported)) { CustomUI.toast('Некоректний формат'); return; }
+                        CustomUI.confirm('Імпорт даних', 'Замінити поточні дані на імпортовані?', () => {
+                            categories = imported;
+                            saveToStorage();
+                            render();
+                            CustomUI.toast('Успішно імпортовано');
+                        });
+                    } catch (err) { CustomUI.toast('Помилка читання файлу'); }
+                };
+                reader.readAsText(this.files[0]);
                 this.value = '';
             }
         });
