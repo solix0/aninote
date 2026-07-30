@@ -493,14 +493,12 @@
             background: var(--bg);
             border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 10px 14px;
+            padding: 12px 14px;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            flex-direction: column;
             gap: 10px;
             cursor: pointer;
             transition: all 0.2s ease;
-            min-height: 44px;
         }
 
         .anime-card:hover {
@@ -516,12 +514,24 @@
             color: var(--text-muted);
         }
 
-        .anime-info {
+        .anime-title {
+            font-size: 15px;
+            font-weight: 500;
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.4;
+            width: 100%;
+        }
+
+        /* Блок зверху (статус та кнопки управління) */
+        .anime-footer {
             display: flex;
             align-items: center;
-            gap: 12px;
-            min-width: 0;
-            flex: 1;
+            justify-content: space-between;
+            width: 100%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 8px;
         }
 
         .anime-status {
@@ -529,7 +539,6 @@
             padding: 3px 10px;
             border-radius: 12px;
             font-weight: 700;
-            flex-shrink: 0;
             letter-spacing: 0.3px;
             text-transform: uppercase;
         }
@@ -552,21 +561,10 @@
             border: 1px solid rgba(136, 136, 136, 0.2);
         }
 
-        .anime-title {
-            font-size: 15px;
-            font-weight: 500;
-            word-wrap: break-word;
-            word-break: break-word;
-            overflow-wrap: break-word;
-            line-height: 1.4;
-            flex: 1;
-            min-width: 0;
-        }
-
         .anime-actions {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             flex-shrink: 0;
         }
 
@@ -1079,14 +1077,14 @@
                 const statusClass = getStatusClass(item.status);
                 return `
                     <div class="anime-card ${isWatched ? 'watched' : ''}" onclick="toggleWatched(${catId}, ${subCat.id}, ${item.id})">
-                        <div class="anime-info">
+                        <div class="anime-footer">
                             <span class="anime-status ${statusClass}">${escapeHtml(item.status)}</span>
-                            <span class="anime-title">${escapeHtml(item.title)}</span>
+                            <div class="anime-actions" onclick="event.stopPropagation()">
+                                <button class="anime-btn" onclick="editAnimeName(${catId}, ${subCat.id}, ${item.id})" title="Редагувати назву">✎</button>
+                                <button class="anime-btn" onclick="deleteAnimeItem(${catId}, ${subCat.id}, ${item.id})" title="Видалити">✕</button>
+                            </div>
                         </div>
-                        <div class="anime-actions" onclick="event.stopPropagation()">
-                            <button class="anime-btn" onclick="editAnimeName(${catId}, ${subCat.id}, ${item.id})" title="Редагувати назву">✎</button>
-                            <button class="anime-btn" onclick="deleteAnimeItem(${catId}, ${subCat.id}, ${item.id})" title="Видалити">✕</button>
-                        </div>
+                        <div class="anime-title">${escapeHtml(item.title)}</div>
                     </div>
                 `;
             }).join('');
