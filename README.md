@@ -1,1 +1,1 @@
-# aninote
+# aninote anime note (film, serials)
