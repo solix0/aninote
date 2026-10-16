@@ -8,6 +8,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" type="image/png" href="logo.png">
     <title>AniNote</title>
+    <!-- Підключаємо PeerJS, бібліотеку QR-кодів та сканер QR -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
         /* ===== СТРОГИЙ ЧОРНО-БІЛО-СІРИЙ МІНІМАЛІЗМ ===== */
         :root {
@@ -228,7 +232,7 @@
             align-items: center;
             gap: 12px;
             flex: 1;
-            min-width: 0; /* ВИПРАВЛЕННЯ: Дозволяє тексту стискатися і не залазити на лічильник */
+            min-width: 0;
         }
 
         .arrow-toggle {
@@ -254,7 +258,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            flex: 1; /* Текст займає весь вільний простір і обрізається трикрапкою */
+            flex: 1;
             min-width: 0;
         }
 
@@ -313,10 +317,6 @@
             font-size: 16px;
         }
 
-        .cat-btn.drag-handle:active, .cat-btn.subcat-drag-handle:active {
-            cursor: grabbing;
-        }
-
         /* ТІЛО КАТЕГОРІЇ */
         .category-body {
             display: none;
@@ -352,10 +352,6 @@
             min-width: 0;
         }
 
-        .add-subcat-form input:focus {
-            border-color: #555555;
-        }
-
         .add-subcat-form button {
             background: #ffffff;
             color: #000000;
@@ -365,14 +361,8 @@
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
-            transition: background 0.2s, border-color 0.2s;
             white-space: nowrap;
             flex-shrink: 0;
-        }
-
-        .add-subcat-form button:hover {
-            background: #e0e0e0;
-            border-color: #e0e0e0;
         }
 
         /* СПИСОК ПІДКАТЕГОРІЙ */
@@ -387,7 +377,6 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             overflow: hidden;
-            transition: border-color 0.2s, opacity 0.2s, transform 0.2s;
         }
 
         .subcategory-header {
@@ -400,7 +389,6 @@
             cursor: pointer;
             user-select: none;
             border-bottom: 1px solid transparent;
-            transition: border-bottom-color 0.2s ease;
         }
 
         .subcategory-block.open .subcategory-header {
@@ -455,10 +443,6 @@
             min-width: 0;
         }
 
-        .add-item-form input:focus {
-            border-color: #555555;
-        }
-
         .add-item-form select {
             background: var(--bg);
             border: 1px solid var(--border);
@@ -480,16 +464,11 @@
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
-            transition: background 0.2s;
             white-space: nowrap;
             flex-shrink: 0;
         }
 
-        .add-item-form button:hover {
-            background: #e0e0e0;
-        }
-
-        /* СПИСОК АНІМЕ/ФІЛЬМІВ */
+        /* СПИСОК АНІМЕ */
         .anime-sublist {
             display: flex;
             flex-direction: column;
@@ -517,21 +496,14 @@
             opacity: 0.55;
         }
 
-        .anime-card.watched .anime-title {
-            color: var(--text-muted);
-        }
-
         .anime-title {
             font-size: 15px;
             font-weight: 500;
             word-wrap: break-word;
-            word-break: break-word;
-            overflow-wrap: break-word;
             line-height: 1.4;
             width: 100%;
         }
 
-        /* Блок зверху (статус та кнопки управління) */
         .anime-footer {
             display: flex;
             align-items: center;
@@ -550,29 +522,14 @@
             text-transform: uppercase;
         }
 
-        .anime-status.status-watching {
-            background: rgba(76, 175, 80, 0.2);
-            color: #4CAF50;
-            border: 1px solid rgba(76, 175, 80, 0.3);
-        }
-
-        .anime-status.status-planned {
-            background: rgba(255, 167, 38, 0.2);
-            color: #FFA726;
-            border: 1px solid rgba(255, 167, 38, 0.3);
-        }
-
-        .anime-status.status-watched {
-            background: rgba(136, 136, 136, 0.15);
-            color: #888888;
-            border: 1px solid rgba(136, 136, 136, 0.2);
-        }
+        .anime-status.status-watching { background: rgba(76, 175, 80, 0.2); color: #4CAF50; border: 1px solid rgba(76, 175, 80, 0.3); }
+        .anime-status.status-planned { background: rgba(255, 167, 38, 0.2); color: #FFA726; border: 1px solid rgba(255, 167, 38, 0.3); }
+        .anime-status.status-watched { background: rgba(136, 136, 136, 0.15); color: #888888; border: 1px solid rgba(136, 136, 136, 0.2); }
 
         .anime-actions {
             display: flex;
             align-items: center;
             gap: 6px;
-            flex-shrink: 0;
         }
 
         .anime-btn {
@@ -587,18 +544,11 @@
             align-items: center;
             justify-content: center;
             font-size: 13px;
-            transition: all 0.15s;
-            user-select: none;
-            flex-shrink: 0;
         }
 
-        .anime-btn:hover {
-            color: #ffffff;
-            border-color: #555555;
-            background: var(--surface-hover);
-        }
+        .anime-btn:hover { color: #ffffff; border-color: #555; background: var(--surface-hover); }
 
-        .empty-substate {
+        .empty-substate, .empty-state {
             text-align: center;
             padding: 16px;
             color: var(--text-muted);
@@ -607,18 +557,9 @@
             border-radius: 8px;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 56px 20px;
-            color: var(--text-muted);
-            font-size: 16px;
-            border: 1px dashed var(--border);
-            border-radius: 16px;
-        }
+        .empty-state { padding: 56px 20px; font-size: 16px; border-radius: 16px; }
 
-        #fileInput {
-            display: none;
-        }
+        #fileInput { display: none; }
 
         /* ===== СПОВІЩЕННЯ ТА МОДАЛЬНІ ВІКНА ===== */
         .toast-container {
@@ -639,7 +580,6 @@
             pointer-events: auto;
             background: var(--modal-glass);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--modal-border);
             color: #ffffff;
             padding: 14px 20px;
@@ -653,15 +593,12 @@
             animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        .toast-item.hide {
-            animation: fadeOut 0.2s ease forwards;
-        }
+        .toast-item.hide { animation: fadeOut 0.2s ease forwards; }
 
         @keyframes slideDown {
             from { opacity: 0; transform: translateY(-20px) scale(0.96); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
-
         @keyframes fadeOut {
             from { opacity: 1; transform: translateY(0) scale(1); }
             to { opacity: 0; transform: translateY(-10px) scale(0.96); }
@@ -672,7 +609,6 @@
             inset: 0;
             background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
             z-index: 2000;
             display: flex;
             align-items: center;
@@ -683,16 +619,13 @@
             transition: opacity 0.2s ease;
         }
 
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
 
         .modal-box {
             background: var(--surface);
             border: 1px solid var(--border);
             width: 100%;
-            max-width: 340px;
+            max-width: 380px;
             border-radius: 16px;
             overflow: hidden;
             text-align: center;
@@ -701,26 +634,10 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.9);
         }
 
-        .modal-overlay.active .modal-box {
-            transform: scale(1);
-        }
-
-        .modal-content {
-            padding: 24px 20px;
-        }
-
-        .modal-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #ffffff;
-            margin-bottom: 8px;
-        }
-
-        .modal-text {
-            font-size: 14px;
-            color: var(--text-muted);
-            line-height: 1.4;
-        }
+        .modal-overlay.active .modal-box { transform: scale(1); }
+        .modal-content { padding: 24px 20px; }
+        .modal-title { font-size: 18px; font-weight: 600; color: #ffffff; margin-bottom: 8px; }
+        .modal-text { font-size: 14px; color: var(--text-muted); line-height: 1.4; }
 
         .modal-input {
             width: 100%;
@@ -733,16 +650,9 @@
             outline: none;
             margin-top: 12px;
         }
+        .modal-input:focus { border-color: #ffffff; }
 
-        .modal-input:focus {
-            border-color: #ffffff;
-        }
-
-        .modal-actions {
-            display: flex;
-            border-top: 1px solid var(--border);
-        }
-
+        .modal-actions { display: flex; border-top: 1px solid var(--border); }
         .modal-btn {
             flex: 1;
             background: none;
@@ -754,18 +664,69 @@
             cursor: pointer;
             transition: background 0.2s, color 0.2s;
         }
+        .modal-btn:hover { background: var(--surface-hover); color: var(--text-main); }
+        .modal-btn.confirm-action, .modal-btn.cancel-action { color: #ffffff; }
+        .modal-btn + .modal-btn { border-left: 1px solid var(--border); }
 
-        .modal-btn:hover {
+        /* Стилі для ПІН-вводу */
+        .pin-inputs {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 16px 0;
+        }
+        .pin-input {
+            width: 45px;
+            height: 55px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg);
+            color: #fff;
+            outline: none;
+        }
+        .pin-input:focus, .pin-input.has-value {
+            border-color: #fff;
             background: var(--surface-hover);
-            color: var(--text-main);
         }
 
-        .modal-btn.confirm-action, .modal-btn.cancel-action {
-            color: #ffffff;
+        .code-box-modal {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: 0.15em;
+            color: #fff;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 10px;
+            margin: 15px 0;
         }
 
-        .modal-btn + .modal-btn {
-            border-left: 1px solid var(--border);
+        .transfer-modes {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            background: var(--bg);
+            padding: 4px;
+            border-radius: 10px;
+        }
+        .transfer-mode-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 8px;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+        .transfer-mode-btn.active {
+            background: var(--surface);
+            color: #fff;
         }
 
         @media (max-width: 600px) {
@@ -775,9 +736,6 @@
             .control-bar { flex-direction: column; align-items: flex-start; gap: 12px; }
             .control-group { width: 100%; }
             .btn-sm { flex: 1; text-align: center; }
-            .add-item-form, .add-subcat-form { flex-direction: column; }
-            .add-item-form input, .add-item-form select, .add-item-form button,
-            .add-subcat-form input, .add-subcat-form button { width: 100%; }
         }
     </style>
 </head>
@@ -814,21 +772,7 @@
 <!-- СПОВІЩЕННЯ -->
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- МОДАЛЬНЕ ВІКНО ПІДТВЕРДЖЕННЯ -->
-<div class="modal-overlay" id="modalOverlay">
-    <div class="modal-box">
-        <div class="modal-content">
-            <div class="modal-title" id="modalTitle">Підтвердження</div>
-            <div class="modal-text" id="modalText">Ви впевнені?</div>
-        </div>
-        <div class="modal-actions">
-            <button class="modal-btn cancel-action" id="modalCancelBtn">Скасувати</button>
-            <button class="modal-btn confirm-action" id="modalConfirmBtn">Підтвердити</button>
-        </div>
-    </div>
-</div>
-
-<!-- МОДАЛЬНЕ ВІКНО РЕДАГУВАННЯ НАЗВИ КАТЕГОРІЇ -->
+<!-- МОДАЛЬНЕ ВІКНО РЕДАГУВАННЯ -->
 <div class="modal-overlay" id="editModalOverlay">
     <div class="modal-box">
         <div class="modal-content">
@@ -839,6 +783,96 @@
         <div class="modal-actions">
             <button class="modal-btn cancel-action" id="editCancelBtn">Скасувати</button>
             <button class="modal-btn confirm-action" id="editSaveBtn">Зберегти</button>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНЕ ВІКНО ЕКСПОРТУ -->
+<div class="modal-overlay" id="exportModalOverlay">
+    <div class="modal-box" style="max-width: 420px;">
+        <div class="modal-content">
+            <div class="modal-title">Експорт даних</div>
+            <div class="transfer-modes">
+                <button class="transfer-mode-btn active" id="expModeCodeBtn" onclick="switchExportMode('code')">P2P Код</button>
+                <button class="transfer-mode-btn" id="expModeFileBtn" onclick="switchExportMode('file')">JSON Файл</button>
+            </div>
+            
+            <div id="expCodeContainer">
+                <div class="modal-text">Введіть цей код або відскануйте QR на іншому пристрої:</div>
+                <div class="code-box-modal" id="exportDisplayCode">----</div>
+                <div id="exportQrcode" style="display: flex; justify-content: center; margin-bottom: 12px;"></div>
+                <div class="modal-text" id="exportStatusBadge" style="font-size: 13px;">Очікування підключення...</div>
+            </div>
+
+            <div id="expFileContainer" style="display: none;">
+                <div class="modal-text" style="margin-bottom: 15px;">Зберегти резервну копію у вигляді JSON-файлу на цьому пристрої.</div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="downloadJSONFile()">Скачати JSON</button>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="modal-btn cancel-action" onclick="closeExportModal()">Закрити</button>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНЕ ВІКНО ІМПОРТУ (З КНОПКОЮ СКАНУВАННЯ QR) -->
+<div class="modal-overlay" id="importModalOverlay">
+    <div class="modal-box" style="max-width: 420px;">
+        <div class="modal-content">
+            <div class="modal-title">Імпорт даних</div>
+            <div class="transfer-modes">
+                <button class="transfer-mode-btn active" id="impModeCodeBtn" onclick="switchImportMode('code')">P2P Код</button>
+                <button class="transfer-mode-btn" id="impModeFileBtn" onclick="switchImportMode('file')">JSON Файл</button>
+            </div>
+
+            <div id="impCodeContainer">
+                <div class="modal-text">Введіть 4-значний код або скануйте QR-код:</div>
+                <div class="pin-inputs" id="importPinInputs">
+                    <input type="text" maxlength="1" class="pin-input">
+                    <input type="text" maxlength="1" class="pin-input">
+                    <input type="text" maxlength="1" class="pin-input">
+                    <input type="text" maxlength="1" class="pin-input">
+                </div>
+                <button class="btn" style="width: 100%; margin-top: 8px; font-size: 14px; padding: 10px;" onclick="openQrScannerModal()">Сканувати QR-код</button>
+                <div class="modal-text" id="importStatusBadge" style="font-size: 13px; margin-top: 10px;"></div>
+            </div>
+
+            <div id="impFileContainer" style="display: none;">
+                <div class="modal-text" style="margin-bottom: 15px;">Виберіть раніше збережений JSON-файл з колекцією.</div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="document.getElementById('fileInput').click(); closeImportModal();">Вибрати файл</button>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="modal-btn cancel-action" onclick="closeImportModal()">Закрити</button>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНЕ ВІКНО КАМЕРИ СКАНЕРА QR -->
+<div class="modal-overlay" id="qrScannerModalOverlay">
+    <div class="modal-box" style="max-width: 380px;">
+        <div class="modal-content">
+            <div class="modal-title">Сканування QR</div>
+            <div class="modal-text" style="margin-bottom: 12px;">Наведіть камеру на QR-код відправника</div>
+            <div id="reader" style="width: 100%; border-radius: 10px; overflow: hidden;"></div>
+            <div class="modal-text" id="scannerStatus" style="font-size: 13px; margin-top: 10px;"></div>
+        </div>
+        <div class="modal-actions">
+            <button class="modal-btn cancel-action" onclick="closeQrScannerModal()">Скасувати</button>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНЕ ВІКНО ПІДТВЕРДЖЕННЯ -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+        <div class="modal-content">
+            <div class="modal-title" id="modalTitle">Підтвердження</div>
+            <div class="modal-text" id="modalText">Ви впевнені?</div>
+        </div>
+        <div class="modal-actions">
+            <button class="modal-btn cancel-action" id="modalCancelBtn">Скасувати</button>
+            <button class="modal-btn confirm-action" id="modalConfirmBtn">Підтвердити</button>
         </div>
     </div>
 </div>
@@ -917,771 +951,664 @@
         }
     };
 
-    (function() {
-        const STORAGE_KEY = 'aninote_categories_v4';
-        let categories = [];
-        let dragData = null;
-        let subDragData = null;
+    // --- P2P ЛОГІКА ТА СКАНЕР ---
+    let peer = null;
+    let receiverPeer = null;
+    let currentConnection = null;
+    let html5QrCode = null;
 
-        const addCatForm = document.getElementById('addCatForm');
-        const catNameInput = document.getElementById('catNameInput');
-        const categoriesContainer = document.getElementById('categoriesContainer');
-        const totalCountEl = document.getElementById('totalCount');
-        const clearAllBtn = document.getElementById('clearAllBtn');
-        const exportBtn = document.getElementById('exportBtn');
-        const importBtn = document.getElementById('importBtn');
-        const fileInput = document.getElementById('fileInput');
-
-        function loadFromStorage() {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                try {
-                    const parsed = JSON.parse(stored);
-                    if (Array.isArray(parsed)) {
-                        categories = parsed.map(cat => {
-                            if (!cat.subcategories) {
-                                cat.subcategories = [{
-                                    id: generateId(),
-                                    name: 'Загальні',
-                                    isOpen: true,
-                                    items: cat.items || []
-                                }];
-                                delete cat.items;
-                            }
-                            return cat;
-                        });
-                        return;
-                    }
-                } catch (_) {}
-            }
-            categories = [];
-            saveToStorage();
+    function switchExportMode(mode) {
+        document.getElementById('expModeCodeBtn').classList.toggle('active', mode === 'code');
+        document.getElementById('expModeFileBtn').classList.toggle('active', mode === 'file');
+        document.getElementById('expCodeContainer').style.display = mode === 'code' ? 'block' : 'none';
+        document.getElementById('expFileContainer').style.display = mode === 'file' ? 'block' : 'none';
+        
+        if (mode === 'code') {
+            initP2PSender();
+        } else {
+            if (peer) { peer.destroy(); peer = null; }
         }
+    }
 
-        function saveToStorage() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
+    function switchImportMode(mode) {
+        document.getElementById('impModeCodeBtn').classList.toggle('active', mode === 'code');
+        document.getElementById('impModeFileBtn').classList.toggle('active', mode === 'file');
+        document.getElementById('impCodeContainer').style.display = mode === 'code' ? 'block' : 'none';
+        document.getElementById('impFileContainer').style.display = mode === 'file' ? 'block' : 'none';
+    }
+
+    function initP2PSender() {
+        if (categories.length === 0) {
+            CustomUI.toast('Нічого експортувати');
+            return;
         }
+        const randomCode = Math.floor(1000 + Math.random() * 9000).toString();
+        const peerId = 'aninote-' + randomCode;
 
-        function generateId() {
-            return Date.now() + Math.floor(Math.random() * 1000);
-        }
+        if (peer) { peer.destroy(); }
+        peer = new Peer(peerId);
 
-        function getStatusClass(status) {
-            const map = {
-                'Дивлюсь': 'status-watching',
-                'У планах': 'status-planned',
-                'Переглянуто': 'status-watched'
-            };
-            return map[status] || '';
-        }
-
-        function render() {
-            let totalItems = 0;
-            categories.forEach(c => {
-                if (c.subcategories) {
-                    c.subcategories.forEach(sc => totalItems += sc.items.length);
-                }
-            });
-            totalCountEl.textContent = totalItems;
-
-            if (categories.length === 0) {
-                categoriesContainer.innerHTML = `
-                    <div class="empty-state">
-                        Немає жодної категорії. Створіть першу категорію вище.
-                    </div>
-                `;
-                return;
-            }
-
-            const hasMoreThanOne = categories.length > 1;
-
-            let html = '';
-            categories.forEach((cat, index) => {
-                let catTotalItems = 0;
-                if (cat.subcategories) {
-                    cat.subcategories.forEach(sc => catTotalItems += sc.items.length);
-                }
-
-                html += `
-                    <div class="category-block ${cat.isOpen ? 'open' : ''}" data-cat-id="${cat.id}" data-index="${index}">
-                        <div class="category-header" onclick="toggleCategory(${cat.id})">
-                            <div class="category-title-group">
-                                <span class="arrow-toggle">▶</span>
-                                <span class="category-name">${escapeHtml(cat.name)}</span>
-                                <span class="category-count">${catTotalItems}</span>
-                            </div>
-                            <div class="category-actions" onclick="event.stopPropagation()">
-                                <button class="cat-btn drag-handle" data-cat-id="${cat.id}" title="${hasMoreThanOne ? 'Затисніть і перетягніть для зміни порядку' : 'Доступно тільки при наявності 2+ категорій'}" ${!hasMoreThanOne ? 'disabled' : ''}>⠿</button>
-                                <button class="cat-btn" onclick="editCategoryName(${cat.id})" title="Редагувати назву">✎</button>
-                                <button class="cat-btn" onclick="deleteCategory(${cat.id})" title="Видалити категорію">✕</button>
-                            </div>
-                        </div>
-                        <div class="category-body">
-                            <form class="add-subcat-form" onsubmit="addSubcategory(event, ${cat.id})">
-                                <input type="text" placeholder="Назва підкатегорії..." required autocomplete="off" class="subcat-name-input">
-                                <button type="submit">Створити підкатегорію</button>
-                            </form>
-                            <div class="subcategories-list">
-                                ${renderSubcategories(cat)}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            categoriesContainer.innerHTML = html;
-            initDragAndDrop();
-        }
-
-        function renderSubcategories(cat) {
-            if (!cat.subcategories || cat.subcategories.length === 0) {
-                return `<div class="empty-substate">У цій категорії ще немає підкатегорій. Створіть її вище.</div>`;
-            }
-
-            const hasMoreSub = cat.subcategories.length > 1;
-
-            return cat.subcategories.map(subCat => {
-                return `
-                    <div class="subcategory-block ${subCat.isOpen ? 'open' : ''}" data-subcat-id="${subCat.id}" data-cat-id="${cat.id}">
-                        <div class="subcategory-header" onclick="toggleSubcategory(${cat.id}, ${subCat.id})">
-                            <div class="subcategory-title-group">
-                                <span class="arrow-toggle">▶</span>
-                                <span class="subcategory-name">${escapeHtml(subCat.name)}</span>
-                                <span class="category-count">${subCat.items.length}</span>
-                            </div>
-                            <div class="category-actions" onclick="event.stopPropagation()">
-                                <button class="cat-btn subcat-drag-handle" data-cat-id="${cat.id}" data-subcat-id="${subCat.id}" title="${hasMoreSub ? 'Перетягніть для зміни порядку підкатегорій' : 'Потрібно 2+ підкатегорії'}" ${!hasMoreSub ? 'disabled' : ''}>⠿</button>
-                                <button class="cat-btn" onclick="editSubcategoryName(${cat.id}, ${subCat.id})" title="Редагувати підкатегорію">✎</button>
-                                <button class="cat-btn" onclick="deleteSubcategory(${cat.id}, ${subCat.id})" title="Видалити підкатегорію">✕</button>
-                            </div>
-                        </div>
-                        <div class="subcategory-body">
-                            <form class="add-item-form" onsubmit="addAnimeItem(event, ${cat.id}, ${subCat.id})">
-                                <input type="text" placeholder="Назва..." required autocomplete="off" class="item-title-input">
-                                <select class="item-status-select">
-                                    <option value="Дивлюсь" selected>Дивлюсь</option>
-                                    <option value="У планах">У планах</option>
-                                    <option value="Переглянуто">Переглянуто</option>
-                                </select>
-                                <button type="submit">Додати</button>
-                            </form>
-                            <div class="anime-sublist">
-                                ${renderAnimeItems(cat.id, subCat)}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderAnimeItems(catId, subCat) {
-            if (subCat.items.length === 0) {
-                return `<div class="empty-substate">У цій підкатегорії порожньо.</div>`;
-            }
-
-            return subCat.items.map(item => {
-                const isWatched = item.status === 'Переглянуто';
-                const statusClass = getStatusClass(item.status);
-                return `
-                    <div class="anime-card ${isWatched ? 'watched' : ''}" onclick="toggleWatched(${catId}, ${subCat.id}, ${item.id})">
-                        <div class="anime-footer">
-                            <span class="anime-status ${statusClass}">${escapeHtml(item.status)}</span>
-                            <div class="anime-actions" onclick="event.stopPropagation()">
-                                <button class="anime-btn" onclick="editAnimeName(${catId}, ${subCat.id}, ${item.id})" title="Редагувати назву">✎</button>
-                                <button class="anime-btn" onclick="deleteAnimeItem(${catId}, ${subCat.id}, ${item.id})" title="Видалити">✕</button>
-                            </div>
-                        </div>
-                        <div class="anime-title">${escapeHtml(item.title)}</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // ===== DRAG & DROP ДЛЯ КАТЕГОРІЙ ТА ПІДКАТЕГОРІЙ =====
-        function initDragAndDrop() {
-            // Категорії
-            document.querySelectorAll('.drag-handle:not(:disabled)').forEach(handle => {
-                handle.removeEventListener('mousedown', dragStart);
-                handle.removeEventListener('touchstart', dragStartTouch);
-                handle.addEventListener('mousedown', dragStart);
-                handle.addEventListener('touchstart', dragStartTouch, { passive: false });
-            });
-
-            // Підкатегорії
-            document.querySelectorAll('.subcat-drag-handle:not(:disabled)').forEach(handle => {
-                handle.removeEventListener('mousedown', subDragStart);
-                handle.removeEventListener('touchstart', subDragStartTouch);
-                handle.addEventListener('mousedown', subDragStart);
-                handle.addEventListener('touchstart', subDragStartTouch, { passive: false });
-            });
-        }
-
-        // --- Категорії Drag & Drop ---
-        function dragStart(e) {
-            e.preventDefault();
-            const button = e.currentTarget;
-            const catId = parseInt(button.dataset.catId);
-            startDrag(catId, e.clientX, e.clientY);
-        }
-
-        function dragStartTouch(e) {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const button = e.currentTarget;
-            const catId = parseInt(button.dataset.catId);
-            startDrag(catId, touch.clientX, touch.clientY);
-        }
-
-        function startDrag(catId, startX, startY) {
-            const index = categories.findIndex(c => c.id === catId);
-            if (index === -1 || categories.length <= 1) return;
-
-            const openState = {};
-            categories.forEach(c => { openState[c.id] = c.isOpen; });
-
-            dragData = {
-                catId: catId,
-                startIndex: index,
-                startX: startX,
-                startY: startY,
-                isDragging: false,
-                threshold: 15,
-                openState: openState
-            };
-
-            document.addEventListener('mousemove', dragMove);
-            document.addEventListener('mouseup', dragEnd);
-            document.addEventListener('touchmove', dragMoveTouch, { passive: false });
-            document.addEventListener('touchend', dragEndTouch, { passive: false });
-        }
-
-        function dragMove(e) {
-            e.preventDefault();
-            if (!dragData) return;
-            checkDragStart(e.clientX, e.clientY);
-            if (dragData.isDragging) handleDrag(e.clientX, e.clientY);
-        }
-
-        function dragMoveTouch(e) {
-            e.preventDefault();
-            if (!dragData) return;
-            const touch = e.touches[0];
-            checkDragStart(touch.clientX, touch.clientY);
-            if (dragData.isDragging) handleDrag(touch.clientX, touch.clientY);
-        }
-
-        function checkDragStart(clientX, clientY) {
-            if (!dragData || dragData.isDragging) return;
-            const dx = clientX - dragData.startX;
-            const dy = clientY - dragData.startY;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            
-            if (dist > dragData.threshold) {
-                dragData.isDragging = true;
-                categories.forEach(c => c.isOpen = false);
-                saveToStorage();
-                
-                document.querySelectorAll('.category-block').forEach(block => {
-                    block.classList.remove('open');
-                    if (parseInt(block.dataset.catId) === dragData.catId) {
-                        block.classList.add('dragging');
-                    }
+        peer.on('open', () => {
+            document.getElementById('exportDisplayCode').innerText = randomCode;
+            document.getElementById('exportStatusBadge').innerText = "Очікування підключення...";
+            document.getElementById('exportQrcode').innerHTML = "";
+            try {
+                new QRCode(document.getElementById('exportQrcode'), {
+                    text: randomCode,
+                    width: 120,
+                    height: 120
                 });
+            } catch(e){}
+        });
+
+        peer.on('connection', (conn) => {
+            currentConnection = conn;
+            document.getElementById('exportStatusBadge').innerText = "Підключено! Передача даних...";
+            conn.on('open', () => {
+                conn.send({
+                    type: 'json_backup',
+                    data: categories
+                });
+                setTimeout(() => {
+                    document.getElementById('exportStatusBadge').innerText = "Успішно передано!";
+                    CustomUI.toast('Дані успішно передано через P2P');
+                }, 400);
+            });
+        });
+
+        peer.on('error', (err) => {
+            if (err.type === 'unavailable-id') {
+                initP2PSender();
             }
-        }
+        });
+    }
 
-        function handleDrag(clientX, clientY) {
-            if (!dragData || !dragData.isDragging) return;
-            const elements = document.elementsFromPoint(clientX, clientY);
-            let targetBlock = null;
-            
-            for (let el of elements) {
-                if (el.classList && el.classList.contains('category-block')) {
-                    targetBlock = el;
-                    break;
-                }
-            }
+    function closeExportModal() {
+        document.getElementById('exportModalOverlay').classList.remove('active');
+        if (peer) { peer.destroy(); peer = null; }
+    }
 
-            document.querySelectorAll('.category-block.drag-over').forEach(el => el.classList.remove('drag-over'));
+    function closeImportModal() {
+        document.getElementById('importModalOverlay').classList.remove('active');
+        if (receiverPeer) { receiverPeer.destroy(); receiverPeer = null; }
+        clearImportPins();
+    }
 
-            if (targetBlock) {
-                const targetId = parseInt(targetBlock.dataset.catId);
-                if (targetId !== dragData.catId) {
-                    targetBlock.classList.add('drag-over');
-                    dragData.targetId = targetId;
+    // Відкриття сканера QR
+    function openQrScannerModal() {
+        document.getElementById('qrScannerModalOverlay').classList.add('active');
+        html5QrCode = new Html5Qrcode("reader");
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 200, height: 200 } },
+            (decodedText) => {
+                const cleanedCode = decodedText.trim().replace(/\D/g, '').slice(-4);
+                if (cleanedCode.length === 4) {
+                    closeQrScannerModal();
+                    fillPinInputs(cleanedCode);
+                    connectToP2PSender(cleanedCode);
                 } else {
-                    dragData.targetId = null;
+                    document.getElementById('scannerStatus').innerText = "Невірний формат QR-коду";
                 }
-            } else {
-                dragData.targetId = null;
+            },
+            (errorMessage) => {}
+        ).catch(err => {
+            document.getElementById('scannerStatus').innerText = "Не вдалося увімкнути камеру";
+        });
+    }
+
+    function closeQrScannerModal() {
+        document.getElementById('qrScannerModalOverlay').classList.remove('active');
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => {
+                html5QrCode.clear();
+            }).catch(err => {});
+        }
+    }
+
+    function fillPinInputs(code) {
+        const inputs = document.querySelectorAll('#importPinInputs .pin-input');
+        for(let i=0; i<4; i++) {
+            if(inputs[i]) {
+                inputs[i].value = code[i] || '';
+                inputs[i].classList.add('has-value');
             }
         }
+    }
 
-        function dragEnd() {
-            document.removeEventListener('mousemove', dragMove);
-            document.removeEventListener('mouseup', dragEnd);
-            finishDrag();
-        }
+    function downloadJSONFile() {
+        if (categories.length === 0) { CustomUI.toast('Нічого експортувати'); return; }
+        const blob = new Blob([JSON.stringify(categories, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `aninote_backup_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        CustomUI.toast('Файл збережено');
+        closeExportModal();
+    }
 
-        function dragEndTouch() {
-            document.removeEventListener('touchmove', dragMoveTouch);
-            document.removeEventListener('touchend', dragEndTouch);
-            finishDrag();
-        }
-
-        function finishDrag() {
-            if (dragData && dragData.isDragging && dragData.targetId !== undefined && dragData.targetId !== null) {
-                const fromIndex = categories.findIndex(c => c.id === dragData.catId);
-                const toIndex = categories.findIndex(c => c.id === dragData.targetId);
-                
-                if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
-                    const [item] = categories.splice(fromIndex, 1);
-                    categories.splice(toIndex, 0, item);
-                    saveToStorage();
-                    render();
-                    CustomUI.toast('Порядок категорій змінено');
-                }
-            }
-
-            if (dragData && dragData.openState) {
-                categories.forEach(c => {
-                    if (dragData.openState.hasOwnProperty(c.id)) {
-                        c.isOpen = dragData.openState[c.id];
+    // PIN ввід для імпорту
+    document.addEventListener('DOMContentLoaded', function() {
+        const pinInputsContainer = document.getElementById('importPinInputs');
+        if(pinInputsContainer) {
+            const inputs = pinInputsContainer.querySelectorAll('.pin-input');
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/\D/g, '');
+                    if (this.value.length > 0) this.classList.add('has-value');
+                    else this.classList.remove('has-value');
+                    
+                    if (this.value.length === 1 && this.nextElementSibling) {
+                        this.nextElementSibling.focus();
+                    }
+                    checkImportPinComplete(inputs);
+                });
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace') {
+                        if (this.value.length === 0 && this.previousElementSibling) {
+                            this.previousElementSibling.focus();
+                            this.previousElementSibling.value = '';
+                            this.previousElementSibling.classList.remove('has-value');
+                            e.preventDefault();
+                        } else {
+                            this.value = '';
+                            this.classList.remove('has-value');
+                            e.preventDefault();
+                        }
                     }
                 });
-                saveToStorage();
-            }
+            });
+        }
+    });
 
-            document.querySelectorAll('.category-block.dragging, .category-block.drag-over').forEach(el => {
-                el.classList.remove('dragging', 'drag-over');
+    function clearImportPins() {
+        const inputs = document.querySelectorAll('#importPinInputs .pin-input');
+        inputs.forEach(i => { i.value = ''; i.classList.remove('has-value'); });
+        document.getElementById('importStatusBadge').innerText = '';
+    }
+
+    function checkImportPinComplete(inputs) {
+        let code = "";
+        inputs.forEach(i => code += i.value);
+        if (code.length === 4) {
+            connectToP2PSender(code);
+        }
+    }
+
+    function connectToP2PSender(code) {
+        const statusEl = document.getElementById('importStatusBadge');
+        statusEl.innerText = "Підключення до відправника...";
+
+        const targetPeerId = 'aninote-' + code;
+        if (receiverPeer) receiverPeer.destroy();
+        receiverPeer = new Peer();
+
+        receiverPeer.on('open', () => {
+            const conn = receiverPeer.connect(targetPeerId);
+
+            conn.on('open', () => {
+                statusEl.innerText = "З'єднання встановлено, отримання...";
             });
 
-            render();
-            dragData = null;
-        }
-
-        // --- Підкатегорії Drag & Drop ---
-        function subDragStart(e) {
-            e.preventDefault();
-            const button = e.currentTarget;
-            const catId = parseInt(button.dataset.catId);
-            const subCatId = parseInt(button.dataset.subcatId);
-            startSubDrag(catId, subCatId, e.clientX, e.clientY);
-        }
-
-        function subDragStartTouch(e) {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const button = e.currentTarget;
-            const catId = parseInt(button.dataset.catId);
-            const subCatId = parseInt(button.dataset.subcatId);
-            startSubDrag(catId, subCatId, touch.clientX, touch.clientY);
-        }
-
-        function startSubDrag(catId, subCatId, startX, startY) {
-            const cat = categories.find(c => c.id === catId);
-            if (!cat || !cat.subcategories || cat.subcategories.length <= 1) return;
-
-            const subIndex = cat.subcategories.findIndex(sc => sc.id === subCatId);
-            if (subIndex === -1) return;
-
-            const catOpenState = {};
-            categories.forEach(c => {
-                catOpenState[c.id] = c.isOpen;
-                if (c.subcategories) {
-                    c.subcategories.forEach(sc => {
-                        catOpenState[`sub_${sc.id}`] = sc.isOpen;
-                    });
-                }
-            });
-
-            subDragData = {
-                catId: catId,
-                subCatId: subCatId,
-                startX: startX,
-                startY: startY,
-                isDragging: false,
-                threshold: 15,
-                openState: catOpenState
-            };
-
-            document.addEventListener('mousemove', subDragMove);
-            document.addEventListener('mouseup', subDragEnd);
-            document.addEventListener('touchmove', subDragMoveTouch, { passive: false });
-            document.addEventListener('touchend', subDragEndTouch, { passive: false });
-        }
-
-        function subDragMove(e) {
-            e.preventDefault();
-            if (!subDragData) return;
-            checkSubDragStart(e.clientX, e.clientY);
-            if (subDragData.isDragging) handleSubDrag(e.clientX, e.clientY);
-        }
-
-        function subDragMoveTouch(e) {
-            e.preventDefault();
-            if (!subDragData) return;
-            const touch = e.touches[0];
-            checkSubDragStart(touch.clientX, touch.clientY);
-            if (subDragData.isDragging) handleSubDrag(touch.clientX, touch.clientY);
-        }
-
-        function checkSubDragStart(clientX, clientY) {
-            if (!subDragData || subDragData.isDragging) return;
-            const dx = clientX - subDragData.startX;
-            const dy = clientY - subDragData.startY;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            
-            if (dist > subDragData.threshold) {
-                subDragData.isDragging = true;
-                
-                categories.forEach(c => {
-                    if (c.id === subDragData.catId) {
-                        c.isOpen = true;
-                        if (c.subcategories) c.subcategories.forEach(sc => sc.isOpen = false);
-                    } else {
-                        c.isOpen = false;
-                    }
-                });
-                saveToStorage();
-                
-                document.querySelectorAll('.category-block').forEach(block => {
-                    const cid = parseInt(block.dataset.catId);
-                    if (cid === subDragData.catId) {
-                        block.classList.add('open');
-                    } else {
-                        block.classList.remove('open');
-                    }
-                });
-
-                document.querySelectorAll('.subcategory-block').forEach(block => {
-                    block.classList.remove('open');
-                    if (parseInt(block.dataset.subcatId) === subDragData.subCatId) {
-                        block.classList.add('dragging');
-                    }
-                });
-            }
-        }
-
-        function handleSubDrag(clientX, clientY) {
-            if (!subDragData || !subDragData.isDragging) return;
-            const elements = document.elementsFromPoint(clientX, clientY);
-            let targetBlock = null;
-            
-            for (let el of elements) {
-                if (el.classList && el.classList.contains('subcategory-block')) {
-                    const blockCatId = parseInt(el.dataset.catId);
-                    if (blockCatId === subDragData.catId) {
-                        targetBlock = el;
-                        break;
-                    }
-                }
-            }
-
-            document.querySelectorAll('.subcategory-block.drag-over').forEach(el => el.classList.remove('drag-over'));
-
-            if (targetBlock) {
-                const targetSubId = parseInt(targetBlock.dataset.subcatId);
-                if (targetSubId !== subDragData.subCatId) {
-                    targetBlock.classList.add('drag-over');
-                    subDragData.targetSubId = targetSubId;
-                } else {
-                    subDragData.targetSubId = null;
-                }
-            } else {
-                subDragData.targetSubId = null;
-            }
-        }
-
-        function subDragEnd() {
-            document.removeEventListener('mousemove', subDragMove);
-            document.removeEventListener('mouseup', subDragEnd);
-            finishSubDrag();
-        }
-
-        function subDragEndTouch() {
-            document.removeEventListener('touchmove', subDragMoveTouch);
-            document.removeEventListener('touchend', subDragEndTouch);
-            finishSubDrag();
-        }
-
-        function finishSubDrag() {
-            if (subDragData && subDragData.isDragging && subDragData.targetSubId !== undefined && subDragData.targetSubId !== null) {
-                const cat = categories.find(c => c.id === subDragData.catId);
-                if (cat && cat.subcategories) {
-                    const fromIndex = cat.subcategories.findIndex(sc => sc.id === subDragData.subCatId);
-                    const toIndex = cat.subcategories.findIndex(sc => sc.id === subDragData.targetSubId);
-
-                    if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
-                        const [item] = cat.subcategories.splice(fromIndex, 1);
-                        cat.subcategories.splice(toIndex, 0, item);
+            conn.on('data', (payload) => {
+                if (payload && payload.data && Array.isArray(payload.data)) {
+                    CustomUI.confirm('Імпорт даних', 'Замінити поточні дані на імпортовані?', () => {
+                        categories = payload.data;
                         saveToStorage();
                         render();
-                        CustomUI.toast('Порядок підкатегорій змінено');
-                    }
+                        CustomUI.toast('Успішно імпортовано через P2P');
+                        closeImportModal();
+                    });
+                } else {
+                    statusEl.innerText = "Невірний формат даних";
                 }
-            }
-
-            if (subDragData && subDragData.openState) {
-                categories.forEach(c => {
-                    if (subDragData.openState.hasOwnProperty(c.id)) {
-                        c.isOpen = subDragData.openState[c.id];
-                    }
-                    if (c.subcategories) {
-                        c.subcategories.forEach(sc => {
-                            if (subDragData.openState.hasOwnProperty(`sub_${sc.id}`)) {
-                                sc.isOpen = subDragData.openState[`sub_${sc.id}`];
-                            }
-                        });
-                    }
-                });
-                saveToStorage();
-            }
-
-            document.querySelectorAll('.subcategory-block.dragging, .subcategory-block.drag-over').forEach(el => {
-                el.classList.remove('dragging', 'drag-over');
             });
 
-            render();
-            subDragData = null;
+            conn.on('error', () => {
+                statusEl.innerText = "Помилка з'єднання або код невірний";
+            });
+        });
+    }
+
+    // --- ОСНОВНИЙ ДОДАТОК ANINOTE ---
+    let categories = [];
+    let dragData = null;
+    let subDragData = null;
+
+    const STORAGE_KEY = 'aninote_categories_v4';
+    const addCatForm = document.getElementById('addCatForm');
+    const catNameInput = document.getElementById('catNameInput');
+    const categoriesContainer = document.getElementById('categoriesContainer');
+    const totalCountEl = document.getElementById('totalCount');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const importBtn = document.getElementById('importBtn');
+    const fileInput = document.getElementById('fileInput');
+
+    function loadFromStorage() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) {
+                    categories = parsed.map(cat => {
+                        if (!cat.subcategories) {
+                            cat.subcategories = [{
+                                id: generateId(),
+                                name: 'Загальні',
+                                isOpen: true,
+                                items: cat.items || []
+                            }];
+                            delete cat.items;
+                        }
+                        return cat;
+                    });
+                    return;
+                }
+            } catch (_) {}
+        }
+        categories = [];
+        saveToStorage();
+    }
+
+    function saveToStorage() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
+    }
+
+    function generateId() {
+        return Date.now() + Math.floor(Math.random() * 1000);
+    }
+
+    function getStatusClass(status) {
+        const map = {
+            'Дивлюсь': 'status-watching',
+            'У планах': 'status-planned',
+            'Переглянуто': 'status-watched'
+        };
+        return map[status] || '';
+    }
+
+    function render() {
+        let totalItems = 0;
+        categories.forEach(c => {
+            if (c.subcategories) {
+                c.subcategories.forEach(sc => totalItems += sc.items.length);
+            }
+        });
+        totalCountEl.textContent = totalItems;
+
+        if (categories.length === 0) {
+            categoriesContainer.innerHTML = `
+                <div class="empty-state">
+                    Немає жодної категорії. Створіть першу категорію вище.
+                </div>
+            `;
+            return;
         }
 
-        // ===== ГЛОБАЛЬНІ ФУНКЦІЇ ДІЙ =====
-        window.toggleCategory = function(catId) {
-            const cat = categories.find(c => c.id === catId);
-            if (cat) {
-                cat.isOpen = !cat.isOpen;
-                saveToStorage();
-                render();
+        const hasMoreThanOne = categories.length > 1;
+        let html = '';
+
+        categories.forEach((cat, index) => {
+            let catTotalItems = 0;
+            if (cat.subcategories) {
+                cat.subcategories.forEach(sc => catTotalItems += sc.items.length);
             }
-        };
 
-        window.toggleSubcategory = function(catId, subCatId) {
-            const cat = categories.find(c => c.id === catId);
-            if (!cat) return;
-            const subCat = cat.subcategories.find(sc => sc.id === subCatId);
-            if (subCat) {
-                subCat.isOpen = !subCat.isOpen;
-                saveToStorage();
-                render();
-            }
-        };
+            html += `
+                <div class="category-block ${cat.isOpen ? 'open' : ''}" data-cat-id="${cat.id}" data-index="${index}">
+                    <div class="category-header" onclick="toggleCategory(${cat.id})">
+                        <div class="category-title-group">
+                            <span class="arrow-toggle">▶</span>
+                            <span class="category-name">${escapeHtml(cat.name)}</span>
+                            <span class="category-count">${catTotalItems}</span>
+                        </div>
+                        <div class="category-actions" onclick="event.stopPropagation()">
+                            <button class="cat-btn drag-handle" data-cat-id="${cat.id}" title="Порядок" ${!hasMoreThanOne ? 'disabled' : ''}>⠿</button>
+                            <button class="cat-btn" onclick="editCategoryName(${cat.id})" title="Редагувати">✎</button>
+                            <button class="cat-btn" onclick="deleteCategory(${cat.id})" title="Видалити">✕</button>
+                        </div>
+                    </div>
+                    <div class="category-body">
+                        <form class="add-subcat-form" onsubmit="addSubcategory(event, ${cat.id})">
+                            <input type="text" placeholder="Назва підкатегорії..." required autocomplete="off" class="subcat-name-input">
+                            <button type="submit">Створити</button>
+                        </form>
+                        <div class="subcategories-list">
+                            ${renderSubcategories(cat)}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
 
-        window.editCategoryName = function(catId) {
-            const cat = categories.find(c => c.id === catId);
-            if (!cat) return;
-            CustomUI.editPrompt('Редагувати категорію', 'Введіть нову назву категорії', cat.name, (newName) => {
-                cat.name = newName;
-                saveToStorage();
-                render();
-                CustomUI.toast(`Категорію перейменовано`);
-            });
-        };
+        categoriesContainer.innerHTML = html;
+        initDragAndDrop();
+    }
 
-        window.editSubcategoryName = function(catId, subCatId) {
-            const cat = categories.find(c => c.id === catId);
-            if (!cat) return;
-            const subCat = cat.subcategories.find(sc => sc.id === subCatId);
-            if (!subCat) return;
+    function renderSubcategories(cat) {
+        if (!cat.subcategories || cat.subcategories.length === 0) {
+            return `<div class="empty-substate">Цей розділ порожній.</div>`;
+        }
+        const hasMoreSub = cat.subcategories.length > 1;
 
-            CustomUI.editPrompt('Редагувати підкатегорію', 'Введіть нову назву підкатегорії', subCat.name, (newName) => {
-                subCat.name = newName;
-                saveToStorage();
-                render();
-                CustomUI.toast(`Підкатегорію перейменовано`);
-            });
-        };
+        return cat.subcategories.map(subCat => {
+            return `
+                <div class="subcategory-block ${subCat.isOpen ? 'open' : ''}" data-subcat-id="${subCat.id}" data-cat-id="${cat.id}">
+                    <div class="subcategory-header" onclick="toggleSubcategory(${cat.id}, ${subCat.id})">
+                        <div class="subcategory-title-group">
+                            <span class="arrow-toggle">▶</span>
+                            <span class="subcategory-name">${escapeHtml(subCat.name)}</span>
+                            <span class="category-count">${subCat.items.length}</span>
+                        </div>
+                        <div class="category-actions" onclick="event.stopPropagation()">
+                            <button class="cat-btn subcat-drag-handle" data-cat-id="${cat.id}" data-subcat-id="${subCat.id}" ${!hasMoreSub ? 'disabled' : ''}>⠿</button>
+                            <button class="cat-btn" onclick="editSubcategoryName(${cat.id}, ${subCat.id})">✎</button>
+                            <button class="cat-btn" onclick="deleteSubcategory(${cat.id}, ${subCat.id})">✕</button>
+                        </div>
+                    </div>
+                    <div class="subcategory-body">
+                        <form class="add-item-form" onsubmit="addAnimeItem(event, ${cat.id}, ${subCat.id})">
+                            <input type="text" placeholder="Назва тайтла..." required autocomplete="off" class="item-title-input">
+                            <select class="item-status-select">
+                                <option value="Дивлюсь" selected>Дивлюсь</option>
+                                <option value="У планах">У планах</option>
+                                <option value="Переглянуто">Переглянуто</option>
+                            </select>
+                            <button type="submit">Додати</button>
+                        </form>
+                        <div class="anime-sublist">
+                            ${renderAnimeItems(cat.id, subCat)}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
 
-        window.deleteCategory = function(catId) {
-            const cat = categories.find(c => c.id === catId);
-            if (!cat) return;
-            CustomUI.confirm('Видалити категорію', `Видалити категорію "${cat.name}" та всі її підкатегорії?`, () => {
-                categories = categories.filter(c => c.id !== catId);
-                saveToStorage();
-                render();
-                CustomUI.toast(`Категорію видалено`);
-            });
-        };
+    function renderAnimeItems(catId, subCat) {
+        if (subCat.items.length === 0) {
+            return `<div class="empty-substate">Тут ще нічого немає.</div>`;
+        }
 
-        window.deleteSubcategory = function(catId, subCatId) {
-            const cat = categories.find(c => c.id === catId);
-            if (!cat) return;
-            const subCat = cat.subcategories.find(sc => sc.id === subCatId);
-            if (!subCat) return;
+        return subCat.items.map(item => {
+            const isWatched = item.status === 'Переглянуто';
+            const statusClass = getStatusClass(item.status);
+            return `
+                <div class="anime-card ${isWatched ? 'watched' : ''}" onclick="toggleWatched(${catId}, ${subCat.id}, ${item.id})">
+                    <div class="anime-footer">
+                        <span class="anime-status ${statusClass}">${escapeHtml(item.status)}</span>
+                        <div class="anime-actions" onclick="event.stopPropagation()">
+                            <button class="anime-btn" onclick="editAnimeName(${catId}, ${subCat.id}, ${item.id})">✎</button>
+                            <button class="anime-btn" onclick="deleteAnimeItem(${catId}, ${subCat.id}, ${item.id})">✕</button>
+                        </div>
+                    </div>
+                    <div class="anime-title">${escapeHtml(item.title)}</div>
+                </div>
+            `;
+        }).join('');
+    }
 
-            CustomUI.confirm('Видалити підкатегорію', `Видалити підкатегорію "${subCat.name}" та її вміст?`, () => {
-                cat.subcategories = cat.subcategories.filter(sc => sc.id !== subCatId);
-                saveToStorage();
-                render();
-                CustomUI.toast(`Підкатегорію видалено`);
-            });
-        };
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
 
-        addCatForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = catNameInput.value.trim();
-            if (!name) return;
+    // Drag & Drop логіка для категорій
+    function initDragAndDrop() {
+        document.querySelectorAll('.drag-handle:not(:disabled)').forEach(handle => {
+            handle.addEventListener('mousedown', dragStart);
+        });
+        document.querySelectorAll('.subcat-drag-handle:not(:disabled)').forEach(handle => {
+            handle.addEventListener('mousedown', subDragStart);
+        });
+    }
 
-            categories.push({
-                id: generateId(),
-                name: name,
-                isOpen: true,
-                subcategories: []
-            });
+    function dragStart(e) {
+        e.preventDefault();
+        const catId = parseInt(e.currentTarget.dataset.catId);
+        const index = categories.findIndex(c => c.id === catId);
+        if (index === -1) return;
+        
+        dragData = { catId, startIndex: index, startX: e.clientX, startY: e.clientY, isDragging: false };
+        document.addEventListener('mousemove', dragMove);
+        document.addEventListener('mouseup', dragEnd);
+    }
 
-            saveToStorage();
+    function dragMove(e) {
+        if (!dragData) return;
+        if (!dragData.isDragging && Math.hypot(e.clientX - dragData.startX, e.clientY - dragData.startY) > 10) {
+            dragData.isDragging = true;
+            categories.forEach(c => c.isOpen = false);
             render();
-            catNameInput.value = '';
-            CustomUI.toast(`Створено категорію: "${name}"`);
-        });
-
-        window.addSubcategory = function(event, catId) {
-            event.preventDefault();
-            const form = event.target;
-            const input = form.querySelector('.subcat-name-input');
-            const name = input.value.trim();
-            if (!name) return;
-
-            const cat = categories.find(c => c.id === catId);
-            if (cat) {
-                cat.subcategories.push({
-                    id: generateId(),
-                    name: name,
-                    isOpen: true,
-                    items: []
-                });
-                saveToStorage();
-                render();
-                CustomUI.toast(`Створено підкатегорію: "${name}"`);
+        }
+        if (dragData.isDragging) {
+            const el = document.elementFromPoint(e.clientX, e.clientY);
+            const block = el ? el.closest('.category-block') : null;
+            document.querySelectorAll('.category-block').forEach(b => b.classList.remove('drag-over'));
+            if (block && parseInt(block.dataset.catId) !== dragData.catId) {
+                block.classList.add('drag-over');
+                dragData.targetId = parseInt(block.dataset.catId);
             }
-        };
+        }
+    }
 
-        window.addAnimeItem = function(event, catId, subCatId) {
-            event.preventDefault();
-            const form = event.target;
-            const titleInput = form.querySelector('.item-title-input');
-            const statusSelect = form.querySelector('.item-status-select');
-
-            const title = titleInput.value.trim();
-            if (!title) return;
-
-            const cat = categories.find(c => c.id === catId);
-            if (!cat) return;
-            const subCat = cat.subcategories.find(sc => sc.id === subCatId);
-            if (subCat) {
-                subCat.items.push({
-                    id: generateId(),
-                    title: title,
-                    status: statusSelect.value
-                });
+    function dragEnd() {
+        document.removeEventListener('mousemove', dragMove);
+        document.removeEventListener('mouseup', dragEnd);
+        if (dragData && dragData.isDragging && dragData.targetId !== undefined) {
+            const from = categories.findIndex(c => c.id === dragData.catId);
+            const to = categories.findIndex(c => c.id === dragData.targetId);
+            if (from !== -1 && to !== -1) {
+                const [item] = categories.splice(from, 1);
+                categories.splice(to, 0, item);
                 saveToStorage();
-                render();
-                CustomUI.toast(`Додано: "${title}"`);
+                CustomUI.toast('Порядок змінено');
             }
-        };
-
-        window.editAnimeName = function(catId, subCatId, itemId) {
-            const cat = categories.find(c => c.id === catId);
-            if (!cat) return;
-            const subCat = cat.subcategories.find(sc => sc.id === subCatId);
-            if (!subCat) return;
-            const item = subCat.items.find(i => i.id === itemId);
-            if (!item) return;
-
-            CustomUI.editPrompt('Редагувати назву', 'Введіть нову назву тайтла', item.title, (newName) => {
-                item.title = newName;
-                saveToStorage();
-                render();
-                CustomUI.toast(`Назву змінено`);
-            });
-        };
-
-        window.toggleWatched = function(catId, subCatId, itemId) {
-            const cat = categories.find(c => c.id === catId);
-            if (!cat) return;
-            const subCat = cat.subcategories.find(sc => sc.id === subCatId);
-            if (!subCat) return;
-            const item = subCat.items.find(i => i.id === itemId);
-            if (!item) return;
-
-            const statuses = ['Дивлюсь', 'Переглянуто', 'У планах'];
-            const currentIndex = statuses.indexOf(item.status);
-            item.status = statuses[(currentIndex + 1) % statuses.length];
-            
-            saveToStorage();
-            render();
-            CustomUI.toast(`Статус: ${item.status}`);
-        };
-
-        window.deleteAnimeItem = function(catId, subCatId, itemId) {
-            const cat = categories.find(c => c.id === catId);
-            if (!cat) return;
-            const subCat = cat.subcategories.find(sc => sc.id === subCatId);
-            if (!subCat) return;
-            const item = subCat.items.find(i => i.id === itemId);
-            if (!item) return;
-
-            CustomUI.confirm('Видалити тайтл', `Видалити "${item.title}"?`, () => {
-                subCat.items = subCat.items.filter(i => i.id !== itemId);
-                saveToStorage();
-                render();
-                CustomUI.toast(`Видалено`);
-            });
-        };
-
-        clearAllBtn.addEventListener('click', () => {
-            if (categories.length === 0) { CustomUI.toast('Вже порожньо'); return; }
-            CustomUI.confirm('Очистити все', 'Видалити абсолютно всі категорії та підкатегорії?', () => {
-                categories = [];
-                saveToStorage();
-                render();
-                CustomUI.toast('Усі дані видалено');
-            });
-        });
-
-        exportBtn.addEventListener('click', () => {
-            if (categories.length === 0) { CustomUI.toast('Нічого експортувати'); return; }
-            const blob = new Blob([JSON.stringify(categories, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `aninote_backup_${new Date().toISOString().slice(0,10)}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            CustomUI.toast('Файл збережено');
-        });
-
-        importBtn.addEventListener('click', () => fileInput.click());
-
-        fileInput.addEventListener('change', function() {
-            if (this.files && this.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const imported = JSON.parse(e.target.result);
-                        if (!Array.isArray(imported)) { CustomUI.toast('Некоректний формат'); return; }
-                        CustomUI.confirm('Імпорт даних', 'Замінити поточні дані на імпортовані?', () => {
-                            categories = imported;
-                            saveToStorage();
-                            render();
-                            CustomUI.toast('Успішно імпортовано');
-                        });
-                    } catch (err) { CustomUI.toast('Помилка читання файлу'); }
-                };
-                reader.readAsText(this.files[0]);
-                this.value = '';
-            }
-        });
-
-        loadFromStorage();
+        }
+        dragData = null;
         render();
-    })();
+    }
+
+    // Drag & Drop для підкатегорій
+    function subDragStart(e) {
+        e.preventDefault();
+        const catId = parseInt(e.currentTarget.dataset.catId);
+        const subCatId = parseInt(e.currentTarget.dataset.subcatId);
+        subDragData = { catId, subCatId, startX: e.clientX, startY: e.clientY, isDragging: false };
+        document.addEventListener('mousemove', subDragMove);
+        document.addEventListener('mouseup', subDragEnd);
+    }
+
+    function subDragMove(e) {
+        if (!subDragData) return;
+        if (!subDragData.isDragging && Math.hypot(e.clientX - subDragData.startX, e.clientY - subDragData.startY) > 10) {
+            subDragData.isDragging = true;
+        }
+        if (subDragData.isDragging) {
+            const el = document.elementFromPoint(e.clientX, e.clientY);
+            const block = el ? el.closest('.subcategory-block') : null;
+            document.querySelectorAll('.subcategory-block').forEach(b => b.classList.remove('drag-over'));
+            if (block && parseInt(block.dataset.subcatId) !== subDragData.subCatId) {
+                block.classList.add('drag-over');
+                subDragData.targetSubId = parseInt(block.dataset.subcatId);
+            }
+        }
+    }
+
+    function subDragEnd() {
+        document.removeEventListener('mousemove', subDragMove);
+        document.removeEventListener('mouseup', subDragEnd);
+        if (subDragData && subDragData.isDragging && subDragData.targetSubId !== undefined) {
+            const cat = categories.find(c => c.id === subDragData.catId);
+            if (cat && cat.subcategories) {
+                const from = cat.subcategories.findIndex(sc => sc.id === subDragData.subCatId);
+                const to = cat.subcategories.findIndex(sc => sc.id === subDragData.targetSubId);
+                if (from !== -1 && to !== -1) {
+                    const [item] = cat.subcategories.splice(from, 1);
+                    cat.subcategories.splice(to, 0, item);
+                    saveToStorage();
+                    CustomUI.toast('Порядок підкатегорій змінено');
+                }
+            }
+        }
+        subDragData = null;
+        render();
+    }
+
+    // Глобальні дії
+    window.toggleCategory = (id) => { const c = categories.find(x => x.id === id); if(c){ c.isOpen = !c.isOpen; saveToStorage(); render(); } };
+    window.toggleSubcategory = (catId, subId) => { const c = categories.find(x => x.id === catId); if(c){ const sc = c.subcategories.find(s => s.id === subId); if(sc){ sc.isOpen = !sc.isOpen; saveToStorage(); render(); } } };
+
+    window.editCategoryName = (id) => {
+        const c = categories.find(x => x.id === id);
+        if(!c) return;
+        CustomUI.editPrompt('Редагувати', 'Нова назва категорії', c.name, (newName) => {
+            c.name = newName; saveToStorage(); render(); CustomUI.toast('Назву змінено');
+        });
+    };
+
+    window.editSubcategoryName = (catId, subId) => {
+        const c = categories.find(x => x.id === catId);
+        if(!c) return;
+        const sc = c.subcategories.find(s => s.id === subId);
+        if(!sc) return;
+        CustomUI.editPrompt('Редагувати', 'Нова назва підкатегорії', sc.name, (newName) => {
+            sc.name = newName; saveToStorage(); render(); CustomUI.toast('Назву змінено');
+        });
+    };
+
+    window.deleteCategory = (id) => {
+        const c = categories.find(x => x.id === id);
+        if(!c) return;
+        CustomUI.confirm('Видалити', `Видалити категорію "${c.name}"?`, () => {
+            categories = categories.filter(x => x.id !== id);
+            saveToStorage(); render(); CustomUI.toast('Видалено');
+        });
+    };
+
+    window.deleteSubcategory = (catId, subId) => {
+        const c = categories.find(x => x.id === catId);
+        if(!c) return;
+        c.subcategories = c.subcategories.filter(s => s.id !== subId);
+        saveToStorage(); render(); CustomUI.toast('Видалено');
+    };
+
+    addCatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = catNameInput.value.trim();
+        if(!name) return;
+        categories.push({ id: generateId(), name: name, isOpen: true, subcategories: [] });
+        saveToStorage(); render(); catNameInput.value = ''; CustomUI.toast('Створено');
+    });
+
+    window.addSubcategory = (e, catId) => {
+        e.preventDefault();
+        const input = e.target.querySelector('.subcat-name-input');
+        const name = input.value.trim();
+        if(!name) return;
+        const c = categories.find(x => x.id === catId);
+        if(c) {
+            c.subcategories.push({ id: generateId(), name: name, isOpen: true, items: [] });
+            saveToStorage(); render(); CustomUI.toast('Підкатегорію створено');
+        }
+    };
+
+    window.addAnimeItem = (e, catId, subId) => {
+        e.preventDefault();
+        const titleInput = e.target.querySelector('.item-title-input');
+        const statusSelect = e.target.querySelector('.item-status-select');
+        const title = titleInput.value.trim();
+        if(!title) return;
+        const c = categories.find(x => x.id === catId);
+        if(!c) return;
+        const sc = c.subcategories.find(s => s.id === subId);
+        if(sc) {
+            sc.items.push({ id: generateId(), title: title, status: statusSelect.value });
+            saveToStorage(); render(); CustomUI.toast('Додано');
+        }
+    };
+
+    window.editAnimeName = (catId, subId, itemId) => {
+        const c = categories.find(x => x.id === catId);
+        if(!c) return;
+        const sc = c.subcategories.find(s => s.id === subId);
+        if(!sc) return;
+        const item = sc.items.find(i => i.id === itemId);
+        if(!item) return;
+        CustomUI.editPrompt('Редагувати', 'Нова назва', item.title, (newName) => {
+            item.title = newName; saveToStorage(); render(); CustomUI.toast('Змінено');
+        });
+    };
+
+    window.toggleWatched = (catId, subId, itemId) => {
+        const c = categories.find(x => x.id === catId);
+        if(!c) return;
+        const sc = c.subcategories.find(s => s.id === subId);
+        if(!sc) return;
+        const item = sc.items.find(i => i.id === itemId);
+        if(!item) return;
+
+        const statuses = ["Дивлюсь", "Переглянуто", "У планах"];
+        const idx = statuses.indexOf(item.status);
+        item.status = statuses[(idx + 1) % statuses.length];
+        saveToStorage(); render(); CustomUI.toast(`Статус: ${item.status}`);
+    };
+
+    window.deleteAnimeItem = (catId, subId, itemId) => {
+        const c = categories.find(x => x.id === catId);
+        if(!c) return;
+        const sc = c.subcategories.find(s => s.id === subId);
+        if(!sc) return;
+        sc.items = sc.items.filter(i => i.id !== itemId);
+        saveToStorage(); render(); CustomUI.toast('Видалено');
+    };
+
+    clearAllBtn.addEventListener('click', () => {
+        if(categories.length === 0) { CustomUI.toast('Вже порожньо'); return; }
+        CustomUI.confirm('Очистити все', 'Видалити всі категорії?', () => {
+            categories = []; saveToStorage(); render(); CustomUI.toast('Все видалено');
+        });
+    });
+
+    // Відкриття модальних вікон експорту та імпорту
+    exportBtn.addEventListener('click', () => {
+        if (categories.length === 0) { CustomUI.toast('Нічого експортувати'); return; }
+        document.getElementById('exportModalOverlay').classList.add('active');
+        switchExportMode('code');
+    });
+
+    importBtn.addEventListener('click', () => {
+        document.getElementById('importModalOverlay').classList.add('active');
+        switchImportMode('code');
+    });
+
+    // Обробка вибору локального JSON-файлу
+    fileInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (!Array.isArray(imported)) { CustomUI.toast('Некоректний формат'); return; }
+                    CustomUI.confirm('Імпорт даних', 'Замінити поточні дані на імпортовані?', () => {
+                        categories = imported;
+                        saveToStorage();
+                        render();
+                        CustomUI.toast('Успішно імпортовано');
+                    });
+                } catch (err) { CustomUI.toast('Помилка читання файлу'); }
+            };
+            reader.readAsText(this.files[0]);
+            this.value = '';
+        }
+    });
+
+    loadFromStorage();
+    render();
 </script>
 </body>
 </html>
