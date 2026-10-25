@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -47,11 +47,11 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            padding: 48px 20px;
+            padding: 40px 16px;
         }
 
         .app {
-            max-width: 760px;
+            max-width: 800px;
             width: 100%;
         }
 
@@ -61,6 +61,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 28px;
+            gap: 16px;
         }
 
         .logo {
@@ -74,10 +75,10 @@
         }
 
         .stats {
-            font-size: 15px;
+            font-size: 14px;
             color: var(--text-muted);
             background: var(--surface);
-            padding: 8px 18px;
+            padding: 8px 16px;
             border-radius: 30px;
             border: 1px solid var(--border);
             white-space: nowrap;
@@ -86,6 +87,53 @@
 
         .stats strong {
             color: var(--text-main);
+        }
+
+        /* ===== ПРОГРЕС ПЕРЕГЛЯНУТОГО ===== */
+        .progress-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 28px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .progress-info #progressPercent {
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 99px;
+            transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-sub {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
         }
 
         /* ===== СТВОРЕННЯ КАТЕГОРІЇ ===== */
@@ -104,7 +152,7 @@
             font-size: 15px;
             color: var(--text-main);
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.2s ease;
             min-width: 0;
         }
 
@@ -114,6 +162,7 @@
 
         .add-cat-form input:focus {
             border-color: #ffffff;
+            box-shadow: 0 0 0 1px #ffffff;
         }
 
         .btn {
@@ -131,6 +180,11 @@
             white-space: nowrap;
             transition: all 0.2s ease;
             flex-shrink: 0;
+        }
+
+        .btn:hover {
+            background: var(--surface-hover);
+            border-color: #555555;
         }
 
         .btn-primary {
@@ -152,6 +206,7 @@
             margin-bottom: 24px;
             padding-bottom: 16px;
             border-bottom: 1px solid var(--border);
+            gap: 12px;
         }
 
         .control-bar h2 {
@@ -163,7 +218,7 @@
 
         .control-group {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
@@ -191,7 +246,7 @@
         .categories-container {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
 
         .category-block {
@@ -199,7 +254,7 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             overflow: hidden;
-            transition: border-color 0.2s, opacity 0.2s, transform 0.2s;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
             cursor: default;
         }
 
@@ -210,7 +265,7 @@
 
         .category-block.drag-over, .subcategory-block.drag-over {
             border-color: #ffffff;
-            box-shadow: 0 0 20px rgba(255,255,255,0.05);
+            box-shadow: 0 0 20px rgba(255,255,255,0.08);
         }
 
         .category-header {
@@ -223,7 +278,11 @@
             cursor: pointer;
             user-select: none;
             border-bottom: 1px solid transparent;
-            transition: border-bottom-color 0.3s ease;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .category-header:hover {
+            background: rgba(255, 255, 255, 0.04);
         }
 
         .category-block.open .category-header {
@@ -238,24 +297,29 @@
             min-width: 0;
         }
 
+        /* СТРІЛКА: плавно обертається в обидві сторони */
         .arrow-toggle {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                        color 0.25s ease;
             display: inline-block;
             flex-shrink: 0;
             width: 18px;
             text-align: center;
-            font-weight: 300;
+            transform: rotate(0deg);
+            transform-origin: center;
+            line-height: 1;
         }
 
         .category-block.open > .category-header .arrow-toggle,
         .subcategory-block.open > .subcategory-header .arrow-toggle {
             transform: rotate(90deg);
+            color: var(--text-main);
         }
 
         .category-name {
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 600;
             color: #ffffff;
             white-space: nowrap;
@@ -286,15 +350,15 @@
             background: none;
             border: 1px solid var(--border);
             color: var(--text-muted);
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             border-radius: 8px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
-            transition: all 0.15s;
+            transition: all 0.15s ease;
             user-select: none;
             touch-action: none;
             flex-shrink: 0;
@@ -320,20 +384,21 @@
             font-size: 16px;
         }
 
-        /* ТІЛО КАТЕГОРІЇ */
+        /* ТІЛО КАТЕГОРІЇ — плавна анімація max-height + opacity + padding */
         .category-body {
-            display: none;
-            padding: 16px 20px;
-            animation: fadeIn 0.25s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
+            padding: 0 20px;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.3s ease,
+                        padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .category-block.open .category-body {
-            display: block;
+            max-height: 6000px;
+            opacity: 1;
+            padding: 16px 20px;
         }
 
         /* ФОРМА ДОДАВАННЯ ПІДКАТЕГОРІЇ */
@@ -353,6 +418,11 @@
             color: #ffffff;
             outline: none;
             min-width: 0;
+            transition: border-color 0.2s;
+        }
+
+        .add-subcat-form input:focus {
+            border-color: #ffffff;
         }
 
         .add-subcat-form button {
@@ -366,6 +436,11 @@
             cursor: pointer;
             white-space: nowrap;
             flex-shrink: 0;
+            transition: opacity 0.2s;
+        }
+
+        .add-subcat-form button:hover {
+            opacity: 0.9;
         }
 
         /* СПИСОК ПІДКАТЕГОРІЙ */
@@ -380,6 +455,7 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             overflow: hidden;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .subcategory-header {
@@ -392,6 +468,11 @@
             cursor: pointer;
             user-select: none;
             border-bottom: 1px solid transparent;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .subcategory-header:hover {
+            background: rgba(255, 255, 255, 0.03);
         }
 
         .subcategory-block.open .subcategory-header {
@@ -417,13 +498,21 @@
             min-width: 0;
         }
 
+        /* ТІЛО ПІДКАТЕГОРІЇ — плавна анімація */
         .subcategory-body {
-            display: none;
-            padding: 14px 16px;
+            padding: 0 16px;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.3s ease,
+                        padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .subcategory-block.open .subcategory-body {
-            display: block;
+            max-height: 5000px;
+            opacity: 1;
+            padding: 14px 16px;
         }
 
         /* ФОРМА ДОДАВАННЯ ЕЛЕМЕНТА */
@@ -444,6 +533,11 @@
             color: #ffffff;
             outline: none;
             min-width: 0;
+            transition: border-color 0.2s;
+        }
+
+        .add-item-form input:focus {
+            border-color: #ffffff;
         }
 
         .add-item-form select {
@@ -469,6 +563,11 @@
             cursor: pointer;
             white-space: nowrap;
             flex-shrink: 0;
+            transition: opacity 0.2s;
+        }
+
+        .add-item-form button:hover {
+            opacity: 0.9;
         }
 
         /* СПИСОК АНІМЕ */
@@ -518,7 +617,7 @@
 
         .anime-status {
             font-size: 10px;
-            padding: 3px 10px;
+            padding: 4px 10px;
             border-radius: 12px;
             font-weight: 700;
             letter-spacing: 0.3px;
@@ -539,14 +638,15 @@
             background: none;
             border: 1px solid var(--border);
             color: var(--text-muted);
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             border-radius: 6px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 13px;
+            transition: all 0.15s ease;
         }
 
         .anime-btn:hover { color: #ffffff; border-color: #555; background: var(--surface-hover); }
@@ -560,7 +660,7 @@
             border-radius: 8px;
         }
 
-        .empty-state { padding: 56px 20px; font-size: 16px; border-radius: 16px; }
+        .empty-state { padding: 56px 20px; font-size: 15px; border-radius: 16px; }
 
         #fileInput { display: none; }
 
@@ -574,7 +674,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            width: calc(100% - 40px);
+            width: calc(100% - 32px);
             max-width: 400px;
             pointer-events: none;
         }
@@ -583,11 +683,12 @@
             pointer-events: auto;
             background: var(--modal-glass);
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--modal-border);
             color: #ffffff;
             padding: 14px 20px;
             border-radius: 14px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 500;
             box-shadow: 0 8px 32px rgba(0,0,0,0.8);
             display: flex;
@@ -612,6 +713,7 @@
             inset: 0;
             background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             z-index: 2000;
             display: flex;
             align-items: center;
@@ -652,6 +754,7 @@
             color: #ffffff;
             outline: none;
             margin-top: 12px;
+            transition: border-color 0.2s;
         }
         .modal-input:focus { border-color: #ffffff; }
 
@@ -689,6 +792,7 @@
             background: var(--bg);
             color: #fff;
             outline: none;
+            transition: border-color 0.2s;
         }
         .pin-input:focus, .pin-input.has-value {
             border-color: #fff;
@@ -696,7 +800,7 @@
         }
 
         .code-box-modal {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 800;
             letter-spacing: 0.15em;
             color: #fff;
@@ -732,13 +836,103 @@
             color: #fff;
         }
 
+        /* Адаптація під мобільні пристрої */
         @media (max-width: 600px) {
-            body { padding: 24px 12px; }
-            .add-cat-form { flex-direction: column; }
+            body { padding: 20px 12px; }
+            .header { margin-bottom: 20px; }
+            .logo { font-size: 24px; }
+            .progress-wrap { padding: 14px 16px; margin-bottom: 20px; }
+            .add-cat-form { flex-direction: column; gap: 8px; }
             .add-cat-form .btn { width: 100%; }
             .control-bar { flex-direction: column; align-items: flex-start; gap: 12px; }
-            .control-group { width: 100%; }
-            .btn-sm { flex: 1; text-align: center; }
+            .control-group { width: 100%; justify-content: space-between; }
+            .btn-sm { flex: 1; text-align: center; padding: 10px; }
+            .add-item-form { flex-direction: column; gap: 8px; }
+            .add-item-form select, .add-item-form button { width: 100%; }
+            .category-header, .subcategory-header { padding: 14px 14px; }
+            .category-block.open .category-body { padding: 14px; }
+            .subcategory-block.open .subcategory-body { padding: 12px 14px; }
+            .category-body { padding: 0 14px; }
+            .subcategory-body { padding: 0 14px; }
+        }
+
+        /* ===== КАСТОМНИЙ СКРОЛБАР ===== */
+        /* Firefox */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #3a3a3a var(--bg);
+        }
+
+        /* Chrome, Edge, Safari, Opera */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+            border-radius: 99px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3a3a3a;
+            border-radius: 99px;
+            border: 2px solid var(--bg);
+            transition: background 0.2s ease;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555555;
+        }
+
+        ::-webkit-scrollbar-thumb:active {
+            background: #777777;
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: var(--bg);
+        }
+
+        /* Тонший скролбар на мобільних */
+        @media (max-width: 600px) {
+            ::-webkit-scrollbar {
+                width: 6px;
+                height: 6px;
+            }
+            ::-webkit-scrollbar-thumb {
+                border: 1px solid var(--bg);
+            }
+        }
+
+        /* ===== ЗАХИСТ ВІД КОПІЮВАННЯ ТА ЗУМУ ===== */
+        * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-user-drag: none;
+        }
+
+        input, textarea, select {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+            -webkit-touch-callout: default;
+        }
+
+        html, body {
+            touch-action: manipulation;
+            -ms-touch-action: manipulation;
+            overscroll-behavior: none;
+        }
+
+        body {
+            -webkit-text-size-adjust: 100%;
+            -moz-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
         }
     </style>
 </head>
@@ -748,6 +942,18 @@
     <div class="header">
         <div class="logo">AniNote</div>
         <div class="stats">Всього тайтлів: <strong id="totalCount">0</strong></div>
+    </div>
+
+    <!-- ЗАГАЛЬНИЙ ПРОГРЕС ПЕРЕГЛЯНУТОГО -->
+    <div class="progress-wrap">
+        <div class="progress-info">
+            <span>Загальний прогрес перегляду</span>
+            <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+        </div>
+        <div class="progress-sub" id="progressSub">Переглянуто 0 з 0 тайтлів</div>
     </div>
 
     <!-- СТВОРЕННЯ НОВОЇ КАТЕГОРІЇ -->
@@ -881,6 +1087,66 @@
 </div>
 
 <script>
+    // ===== ЗАХИСТ ВІД КОПІЮВАННЯ, ЗУМУ ТА КОНТЕКСТНОГО МЕНЮ =====
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+    });
+
+    document.addEventListener('copy', function(e) {
+        e.preventDefault();
+        return false;
+    });
+
+    document.addEventListener('cut', function(e) {
+        e.preventDefault();
+        return false;
+    });
+
+    document.addEventListener('selectstart', function(e) {
+        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') {
+            e.preventDefault();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        // Блокування Ctrl/Cmd + C, X, A, U, S
+        if ((e.ctrlKey || e.metaKey) && ['c', 'x', 'a', 'u', 's'].includes(e.key.toLowerCase())) {
+            e.preventDefault();
+            return false;
+        }
+        // Блокування F12 та Ctrl+Shift+I/J/C
+        if (e.key === 'F12' ||
+            ((e.ctrlKey || e.metaKey) && e.shiftKey && ['i', 'j', 'c'].includes(e.key.toLowerCase()))) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // Блокування pinch-zoom (два пальці)
+    document.addEventListener('touchmove', function(e) {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    // Блокування подвійного тапу для зуму
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(e) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, { passive: false });
+
+    // Блокування масштабування колесом миші з Ctrl
+    document.addEventListener('wheel', function(e) {
+        if (e.ctrlKey) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
     const CustomUI = {
         toast(message, duration = 2500) {
             const container = document.getElementById('toastContainer');
@@ -1233,14 +1499,35 @@
         return map[status] || '';
     }
 
+    function updateProgress(watched, total) {
+        const percent = total > 0 ? Math.round((watched / total) * 100) : 0;
+
+        const fill = document.getElementById('progressFill');
+        const percentEl = document.getElementById('progressPercent');
+        const subEl = document.getElementById('progressSub');
+
+        if (fill) fill.style.width = percent + '%';
+        if (percentEl) percentEl.textContent = percent + '%';
+        if (subEl) subEl.textContent = `Переглянуто ${watched} з ${total} тайтлів`;
+    }
+
     function render() {
         let totalItems = 0;
+        let watchedItems = 0;
+
         categories.forEach(c => {
             if (c.subcategories) {
-                c.subcategories.forEach(sc => totalItems += sc.items.length);
+                c.subcategories.forEach(sc => {
+                    totalItems += sc.items.length;
+                    sc.items.forEach(item => {
+                        if (item.status === 'Переглянуто') watchedItems++;
+                    });
+                });
             }
         });
+
         totalCountEl.textContent = totalItems;
+        updateProgress(watchedItems, totalItems);
 
         if (categories.length === 0) {
             categoriesContainer.innerHTML = `
@@ -1462,9 +1749,28 @@
         render();
     }
 
-    // Глобальні дії
-    window.toggleCategory = (id) => { const c = categories.find(x => x.id === id); if(c){ c.isOpen = !c.isOpen; saveToStorage(); render(); } };
-    window.toggleSubcategory = (catId, subId) => { const c = categories.find(x => x.id === catId); if(c){ const sc = c.subcategories.find(s => s.id === subId); if(sc){ sc.isOpen = !sc.isOpen; saveToStorage(); render(); } } };
+    // Глобальні дії — toggle БЕЗ повного render(), щоб працювали CSS-анімації
+    window.toggleCategory = (id) => {
+        const c = categories.find(x => x.id === id);
+        if (!c) return;
+        c.isOpen = !c.isOpen;
+        saveToStorage();
+
+        const block = document.querySelector(`.category-block[data-cat-id="${id}"]`);
+        if (block) block.classList.toggle('open', c.isOpen);
+    };
+
+    window.toggleSubcategory = (catId, subId) => {
+        const c = categories.find(x => x.id === catId);
+        if (!c) return;
+        const sc = c.subcategories.find(s => s.id === subId);
+        if (!sc) return;
+        sc.isOpen = !sc.isOpen;
+        saveToStorage();
+
+        const block = document.querySelector(`.subcategory-block[data-subcat-id="${subId}"]`);
+        if (block) block.classList.toggle('open', sc.isOpen);
+    };
 
     window.editCategoryName = (id) => {
         const c = categories.find(x => x.id === id);
