@@ -207,36 +207,38 @@
             background: var(--surface-hover);
         }
 
-/* Контейнер всередині підказки */
+/* Контейнер підказки */
 .suggestion-item > div {
     display: flex;
     align-items: center;
-    justify-content: space-between;  /* ← ключове: розсуває по краях */
     gap: 12px;
     width: 100%;
     min-width: 0;
+    /* justify-content: space-between більше не потрібен — елементи і так по 50% */
 }
 
-/* Назва тайтла — зліва, може скорочуватись */
+/* Назва — рівно 50% */
 .suggestion-main {
     font-size: 14px;
     color: var(--text-main);
     font-weight: 500;
-    flex: 1 1 auto;
-    min-width: 0;
+    flex: 1 1 50%;      /* ← базова ширина 50%, може скорочуватись */
+    min-width: 0;       /* ← обов'язково для text-overflow */
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;  
+    text-overflow: ellipsis;
 }
 
-/* Шлях — завжди притиснутий до правого краю */
+/* Шлях — рівно 50% */
 .suggestion-path {
     font-size: 12px;
     color: var(--text-muted);
-    margin-left: auto;       
-    flex: 0 0 auto;         
+    flex: 1 1 50%;      /* ← теж 50% */
+    min-width: 0;       /* ← щоб і шлях міг обрізатись, якщо довгий */
     white-space: nowrap;
-    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: right;  /* текст притиснутий до правого краю своєї половини */
 }
 
         /* Belaya obvodka bez svecheniya na 3 sekundy */
