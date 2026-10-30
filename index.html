@@ -207,17 +207,37 @@
             background: var(--surface-hover);
         }
 
-        .suggestion-main {
-            font-size: 14px;
-            color: var(--text-main);
-            font-weight: 500;
-        }
+/* Контейнер всередині підказки */
+.suggestion-item > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;  /* ← ключове: розсуває по краях */
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+}
 
-        .suggestion-path {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-left: 8px;
-        }
+/* Назва тайтла — зліва, може скорочуватись */
+.suggestion-main {
+    font-size: 14px;
+    color: var(--text-main);
+    font-weight: 500;
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;  
+}
+
+/* Шлях — завжди притиснутий до правого краю */
+.suggestion-path {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: auto;       
+    flex: 0 0 auto;         
+    white-space: nowrap;
+    text-align: right;
+}
 
         /* Belaya obvodka bez svecheniya na 3 sekundy */
         .highlight-search {
