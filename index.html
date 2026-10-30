@@ -95,7 +95,7 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 16px 20px;
-            margin-bottom: 28px;
+            margin-bottom: 20px;
         }
 
         .progress-info {
@@ -136,6 +136,100 @@
             color: var(--text-muted);
         }
 
+        /* ===== БЛОК ПОИСКА ===== */
+        .search-wrap {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input-box input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 15px;
+            color: #ffffff;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .search-input-box input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-input-box input:focus {
+            border-color: #ffffff;
+            box-shadow: 0 0 0 1px #ffffff;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            z-index: 500;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .search-suggestions.active {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.15s ease;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover, .suggestion-item.selected {
+            background: var(--surface-hover);
+        }
+
+        .suggestion-main {
+            font-size: 14px;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .suggestion-path {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-left: 8px;
+        }
+
+        /* Belaya obvodka bez svecheniya na 3 sekundy */
+        .highlight-search {
+            animation: whiteBorderHighlight 3s ease-out;
+        }
+
+        @keyframes whiteBorderHighlight {
+            0% { border-color: #ffffff; }
+            70% { border-color: #ffffff; }
+            100% { border-color: var(--border); }
+        }
+
         /* ===== СТВОРЕННЯ КАТЕГОРІЇ ===== */
         .add-cat-form {
             display: flex;
@@ -150,7 +244,7 @@
             border-radius: 12px;
             padding: 14px 18px;
             font-size: 15px;
-            color: var(--text-main);
+            color: #ffffff;
             outline: none;
             transition: all 0.2s ease;
             min-width: 0;
@@ -285,7 +379,7 @@
             background: rgba(255, 255, 255, 0.04);
         }
 
-        .category-block.open .category-header {
+        .category-block.open > .category-header {
             border-bottom-color: var(--border);
         }
 
@@ -297,12 +391,10 @@
             min-width: 0;
         }
 
-        /* СТРІЛКА: плавно обертається в обидві сторони */
         .arrow-toggle {
             font-size: 12px;
             color: var(--text-muted);
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                        color 0.25s ease;
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), color 0.25s ease;
             display: inline-block;
             flex-shrink: 0;
             width: 18px;
@@ -384,7 +476,6 @@
             font-size: 16px;
         }
 
-        /* ТІЛО КАТЕГОРІЇ — плавна анімація max-height + opacity + padding */
         .category-body {
             padding: 0 20px;
             max-height: 0;
@@ -401,7 +492,6 @@
             padding: 16px 20px;
         }
 
-        /* ФОРМА ДОДАВАННЯ ПІДКАТЕГОРІЇ */
         .add-subcat-form {
             display: flex;
             gap: 8px;
@@ -443,7 +533,6 @@
             opacity: 0.9;
         }
 
-        /* СПИСОК ПІДКАТЕГОРІЙ */
         .subcategories-list {
             display: flex;
             flex-direction: column;
@@ -498,7 +587,6 @@
             min-width: 0;
         }
 
-        /* ТІЛО ПІДКАТЕГОРІЇ — плавна анімація */
         .subcategory-body {
             padding: 0 16px;
             max-height: 0;
@@ -515,7 +603,6 @@
             padding: 14px 16px;
         }
 
-        /* ФОРМА ДОДАВАННЯ ЕЛЕМЕНТА */
         .add-item-form {
             display: flex;
             gap: 8px;
@@ -570,7 +657,6 @@
             opacity: 0.9;
         }
 
-        /* СПИСОК АНІМЕ */
         .anime-sublist {
             display: flex;
             flex-direction: column;
@@ -774,7 +860,6 @@
         .modal-btn.confirm-action, .modal-btn.cancel-action { color: #ffffff; }
         .modal-btn + .modal-btn { border-left: 1px solid var(--border); }
 
-        /* Стилі для ПІН-вводу */
         .pin-inputs {
             display: flex;
             gap: 8px;
@@ -836,12 +921,12 @@
             color: #fff;
         }
 
-        /* Адаптація під мобільні пристрої */
         @media (max-width: 600px) {
             body { padding: 20px 12px; }
             .header { margin-bottom: 20px; }
             .logo { font-size: 24px; }
-            .progress-wrap { padding: 14px 16px; margin-bottom: 20px; }
+            .progress-wrap { padding: 14px 16px; margin-bottom: 16px; }
+            .search-wrap { margin-bottom: 20px; }
             .add-cat-form { flex-direction: column; gap: 8px; }
             .add-cat-form .btn { width: 100%; }
             .control-bar { flex-direction: column; align-items: flex-start; gap: 12px; }
@@ -856,14 +941,11 @@
             .subcategory-body { padding: 0 14px; }
         }
 
-        /* ===== КАСТОМНИЙ СКРОЛБАР ===== */
-        /* Firefox */
         * {
             scrollbar-width: thin;
             scrollbar-color: #3a3a3a var(--bg);
         }
 
-        /* Chrome, Edge, Safari, Opera */
         ::-webkit-scrollbar {
             width: 10px;
             height: 10px;
@@ -893,7 +975,6 @@
             background: var(--bg);
         }
 
-        /* Тонший скролбар на мобільних */
         @media (max-width: 600px) {
             ::-webkit-scrollbar {
                 width: 6px;
@@ -904,7 +985,6 @@
             }
         }
 
-        /* ===== ЗАХИСТ ВІД КОПІЮВАННЯ ТА ЗУМУ ===== */
         * {
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -934,6 +1014,46 @@
             -ms-text-size-adjust: 100%;
             text-size-adjust: 100%;
         }
+
+        /* ===== СКРОЛБАР ВСЕРЕДИНІ ВИПАДАЮЧОГО СПИСКУ ПОШУКУ ===== */
+.search-suggestions::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.search-suggestions::-webkit-scrollbar-track {
+    background: var(--surface);
+    border-radius: 99px;
+    margin: 6px 0; /* відступ зверху/знизу, щоб не вилазив за заокруглення */
+}
+
+.search-suggestions::-webkit-scrollbar-thumb {
+    background: #3a3a3a;
+    border-radius: 99px;
+    border: 2px solid var(--surface); /* "товщає" вигляд як на macOS */
+    background-clip: padding-box;
+    transition: background 0.2s ease;
+}
+
+.search-suggestions::-webkit-scrollbar-thumb:hover {
+    background: #555555;
+    background-clip: padding-box;
+}
+
+.search-suggestions::-webkit-scrollbar-thumb:active {
+    background: #777777;
+    background-clip: padding-box;
+}
+
+.search-suggestions::-webkit-scrollbar-corner {
+    background: var(--surface);
+}
+
+/* Firefox */
+.search-suggestions {
+    scrollbar-width: thin;
+    scrollbar-color: #3a3a3a var(--surface);
+}
     </style>
 </head>
 <body>
@@ -954,6 +1074,14 @@
             <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
         </div>
         <div class="progress-sub" id="progressSub">Переглянуто 0 з 0 тайтлів</div>
+    </div>
+
+    <!-- БЛОК ПОИСКА -->
+    <div class="search-wrap">
+        <div class="search-input-box">
+            <input type="text" id="searchInput" placeholder="Пошук..." autocomplete="off">
+        </div>
+        <div class="search-suggestions" id="searchSuggestions"></div>
     </div>
 
     <!-- СТВОРЕННЯ НОВОЇ КАТЕГОРІЇ -->
@@ -1087,7 +1215,7 @@
 </div>
 
 <script>
-    // ===== ЗАХИСТ ВІД КОПІЮВАННЯ, ЗУМУ ТА КОНТЕКСТНОГО МЕНЮ =====
+    // ===== ZAŠČITA OT KOPIROVANIYA, ZUMA I KONTEKSTNOGO MENYU =====
     document.addEventListener('contextmenu', function(e) {
         e.preventDefault();
         return false;
@@ -1110,12 +1238,10 @@
     });
 
     document.addEventListener('keydown', function(e) {
-        // Блокування Ctrl/Cmd + C, X, A, U, S
         if ((e.ctrlKey || e.metaKey) && ['c', 'x', 'a', 'u', 's'].includes(e.key.toLowerCase())) {
             e.preventDefault();
             return false;
         }
-        // Блокування F12 та Ctrl+Shift+I/J/C
         if (e.key === 'F12' ||
             ((e.ctrlKey || e.metaKey) && e.shiftKey && ['i', 'j', 'c'].includes(e.key.toLowerCase()))) {
             e.preventDefault();
@@ -1123,14 +1249,12 @@
         }
     });
 
-    // Блокування pinch-zoom (два пальці)
     document.addEventListener('touchmove', function(e) {
         if (e.touches.length > 1) {
             e.preventDefault();
         }
     }, { passive: false });
 
-    // Блокування подвійного тапу для зуму
     let lastTouchEnd = 0;
     document.addEventListener('touchend', function(e) {
         const now = Date.now();
@@ -1140,7 +1264,6 @@
         lastTouchEnd = now;
     }, { passive: false });
 
-    // Блокування масштабування колесом миші з Ctrl
     document.addEventListener('wheel', function(e) {
         if (e.ctrlKey) {
             e.preventDefault();
@@ -1220,7 +1343,7 @@
         }
     };
 
-    // --- P2P ЛОГІКА ТА СКАНЕР ---
+    // --- P2P LOGIKA I SKANER ---
     let peer = null;
     let receiverPeer = null;
     let currentConnection = null;
@@ -1303,7 +1426,6 @@
         clearImportPins();
     }
 
-    // Відкриття сканера QR
     function openQrScannerModal() {
         document.getElementById('qrScannerModalOverlay').classList.add('active');
         html5QrCode = new Html5Qrcode("reader");
@@ -1358,7 +1480,6 @@
         closeExportModal();
     }
 
-    // PIN ввід для імпорту
     document.addEventListener('DOMContentLoaded', function() {
         const pinInputsContainer = document.getElementById('importPinInputs');
         if(pinInputsContainer) {
@@ -1441,10 +1562,12 @@
         });
     }
 
-    // --- ОСНОВНИЙ ДОДАТОК ANINOTE ---
+    // --- OSNOVNOY DODATOK ANINOTE ---
     let categories = [];
     let dragData = null;
     let subDragData = null;
+    let currentSuggestions = [];
+    let selectedSuggestionIndex = -1;
 
     const STORAGE_KEY = 'aninote_categories_v4';
     const addCatForm = document.getElementById('addCatForm');
@@ -1455,6 +1578,9 @@
     const exportBtn = document.getElementById('exportBtn');
     const importBtn = document.getElementById('importBtn');
     const fileInput = document.getElementById('fileInput');
+
+    const searchInput = document.getElementById('searchInput');
+    const searchSuggestions = document.getElementById('searchSuggestions');
 
     function loadFromStorage() {
         const stored = localStorage.getItem(STORAGE_KEY);
@@ -1627,7 +1753,7 @@
             const isWatched = item.status === 'Переглянуто';
             const statusClass = getStatusClass(item.status);
             return `
-                <div class="anime-card ${isWatched ? 'watched' : ''}" onclick="toggleWatched(${catId}, ${subCat.id}, ${item.id})">
+                <div class="anime-card ${isWatched ? 'watched' : ''}" data-item-id="${item.id}" onclick="toggleWatched(${catId}, ${subCat.id}, ${item.id})">
                     <div class="anime-footer">
                         <span class="anime-status ${statusClass}">${escapeHtml(item.status)}</span>
                         <div class="anime-actions" onclick="event.stopPropagation()">
@@ -1647,7 +1773,131 @@
         return div.innerHTML;
     }
 
-    // Drag & Drop логіка для категорій
+    // --- LOGIKA POISKA (TOL'KO TAYTLY) ---
+    function updateSearchSuggestions() {
+        const query = searchInput.value.trim().toLowerCase();
+        if (!query) {
+            searchSuggestions.classList.remove('active');
+            searchSuggestions.innerHTML = '';
+            currentSuggestions = [];
+            selectedSuggestionIndex = -1;
+            return;
+        }
+
+        currentSuggestions = [];
+
+        // Ishchom tol'ko po taytlam
+        categories.forEach(cat => {
+            if (cat.subcategories) {
+                cat.subcategories.forEach(sub => {
+                    if (sub.items) {
+                        sub.items.forEach(item => {
+                            if (item.title.toLowerCase().includes(query)) {
+                                currentSuggestions.push({
+                                    catId: cat.id,
+                                    subId: sub.id,
+                                    itemId: item.id,
+                                    title: item.title,
+                                    path: `${cat.name} › ${sub.name}`
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        if (currentSuggestions.length === 0) {
+            searchSuggestions.classList.remove('active');
+            searchSuggestions.innerHTML = '';
+            selectedSuggestionIndex = -1;
+            return;
+        }
+
+        searchSuggestions.innerHTML = currentSuggestions.map((item, index) => `
+            <div class="suggestion-item ${index === selectedSuggestionIndex ? 'selected' : ''}" onclick="selectSearchItem(${index})">
+                <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
+                    <span class="suggestion-main">${escapeHtml(item.title)}</span>
+                    <span class="suggestion-path">(${escapeHtml(item.path)})</span>
+                </div>
+            </div>
+        `).join('');
+
+        searchSuggestions.classList.add('active');
+    }
+
+    function selectSearchItem(index) {
+        const target = currentSuggestions[index];
+        if (!target) return;
+
+        searchSuggestions.classList.remove('active');
+        searchInput.value = '';
+        selectedSuggestionIndex = -1;
+
+        const cat = categories.find(c => c.id === target.catId);
+        if (cat) cat.isOpen = true;
+
+        if (cat && cat.subcategories) {
+            const sub = cat.subcategories.find(s => s.id === target.subId);
+            if (sub) sub.isOpen = true;
+        }
+
+        saveToStorage();
+        render();
+
+        setTimeout(() => {
+            const targetEl = document.querySelector(`.anime-card[data-item-id="${target.itemId}"]`);
+
+            if (targetEl) {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                targetEl.classList.add('highlight-search');
+                setTimeout(() => targetEl.classList.remove('highlight-search'), 3100);
+            }
+        }, 100);
+    }
+
+    searchInput.addEventListener('input', () => {
+        selectedSuggestionIndex = -1;
+        updateSearchSuggestions();
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+        if (!searchSuggestions.classList.contains('active')) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            selectedSuggestionIndex = (selectedSuggestionIndex + 1) % currentSuggestions.length;
+            updateSearchSuggestionsUI();
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            selectedSuggestionIndex = (selectedSuggestionIndex - 1 + currentSuggestions.length) % currentSuggestions.length;
+            updateSearchSuggestionsUI();
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (selectedSuggestionIndex >= 0 && selectedSuggestionIndex < currentSuggestions.length) {
+                selectSearchItem(selectedSuggestionIndex);
+            } else if (currentSuggestions.length > 0) {
+                selectSearchItem(0);
+            }
+        } else if (e.key === 'Escape') {
+            searchSuggestions.classList.remove('active');
+        }
+    });
+
+    function updateSearchSuggestionsUI() {
+        const items = searchSuggestions.querySelectorAll('.suggestion-item');
+        items.forEach((item, idx) => {
+            item.classList.toggle('selected', idx === selectedSuggestionIndex);
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-wrap')) {
+            searchSuggestions.classList.remove('active');
+        }
+    });
+
+    // Drag & Drop logika dlya kategoriy
     function initDragAndDrop() {
         document.querySelectorAll('.drag-handle:not(:disabled)').forEach(handle => {
             handle.addEventListener('mousedown', dragStart);
@@ -1703,7 +1953,7 @@
         render();
     }
 
-    // Drag & Drop для підкатегорій
+    // Drag & Drop dlya podkategoriy
     function subDragStart(e) {
         e.preventDefault();
         const catId = parseInt(e.currentTarget.dataset.catId);
@@ -1749,7 +1999,7 @@
         render();
     }
 
-    // Глобальні дії — toggle БЕЗ повного render(), щоб працювали CSS-анімації
+    // Global'nyye deystviya
     window.toggleCategory = (id) => {
         const c = categories.find(x => x.id === id);
         if (!c) return;
@@ -1883,7 +2133,6 @@
         });
     });
 
-    // Відкриття модальних вікон експорту та імпорту
     exportBtn.addEventListener('click', () => {
         if (categories.length === 0) { CustomUI.toast('Нічого експортувати'); return; }
         document.getElementById('exportModalOverlay').classList.add('active');
@@ -1895,7 +2144,6 @@
         switchImportMode('code');
     });
 
-    // Обробка вибору локального JSON-файлу
     fileInput.addEventListener('change', function() {
         if (this.files && this.files[0]) {
             const reader = new FileReader();
